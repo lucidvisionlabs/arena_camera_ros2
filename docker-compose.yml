@@ -1,0 +1,7 @@
+version: "3.2"
+services:
+  ros2dev:
+    image: arenacameraros2
+    volumes:
+      - ./:/opt/ros2_ws
+    
