@@ -52,6 +52,14 @@ if [ $INSTALL_ROS2 -eq 1 ]; then
     # install argcomplete (optional)
     sudo apt install python3-argcomplete --assume-yes
 
+
+    # for building workspaces with colcon
+    #   - sudo apt install -y python3-colcon-common-extensions
+    #   - cd to <X> 
+    #   - colcon build
+    #   - echo "source <X>/setup.bash" >> ~/.bashrc
+    #   - echo "source <X>/setup.zsh>" >> ~/.zshrc
+    
 fi
 
 # -----------------------------------------------------------------------------
