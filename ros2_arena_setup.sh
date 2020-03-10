@@ -46,8 +46,8 @@ if [ $INSTALL_ROS2 -eq 1 ]; then
     sudo apt install ros-dashing-desktop --assume-yes
 
     # env setup
-    echo "source /opt/ros/dashing/setup.bash">> ~/.bashrc
-    echo "source /opt/ros/dashing/setup.zsh>">> ~/.zshrc
+    echo "source /opt/ros/dashing/setup.bash" >> ~/.bashrc
+    echo "source /opt/ros/dashing/setup.zsh>" >> ~/.zshrc
 
     # install argcomplete (optional)
     sudo apt install python3-argcomplete --assume-yes
