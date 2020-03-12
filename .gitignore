@@ -1,4 +1,5 @@
+__pycache__
 ve_dev
-ros2_ws/log/
-ros2_ws/build/arena_camera_node/
-ros2_ws/install/arena_camera_node/
+log
+build
+install

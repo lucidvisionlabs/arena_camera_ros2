@@ -5,7 +5,7 @@ package_name = 'arena_camera_node'
 setup(
     name=package_name,
     version='0.0.0',
-    packages=[package_name],
+    packages=[package_name, 'arena_api'],
     install_requires=['setuptools'],
     zip_safe=True,
     author='LUCID Vision Labs',
@@ -24,7 +24,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'main = arena_camera_node.main:main'
+            'run = arena_camera_node.run:run'
         ],
     },
 )
