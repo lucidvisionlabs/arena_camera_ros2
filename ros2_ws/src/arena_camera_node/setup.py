@@ -95,14 +95,37 @@ def get_arena_api_installation_path():
 
     return Path(path) / 'arena_api'
 
+#./install/arena_camera_node/lib/python3.6/site-packages/site.py
+#./ve_dev/lib/python3.6/site-packages
+
 
 def copy_arena_api_files_to_install_dir():
     arena_api_path = get_arena_api_installation_path()
+    #print(arena_api_path)
+    #print('/home/abdul/arena_camera_ros2/ros2_ws/ve_dev/lib/python3.6/site-packages/arena_api (corr)')
 
     python_version_name = Path(sys.executable).resolve().name
+    '''
     install_path_prefix = Path(__file__).parent.parent.parent
     install_path = install_path_prefix / 'install' / \
         package_name / 'lib' / python_version_name / 'site-packages' / 'arena_api'
+    #print(install_path)
+    #print('/home/abdul/arena_camera_ros2/ros2_ws/install/arena_camera_node/lib/python3.6/site-packages/arena_api (corr)')
+    '''
+
+    # - common root between __file__ and installation path
+    # - geting __file__ and it parent would not work as colcon does 
+    # something weired to the setup file
+    # - starts from the location of this file
+    # install_path_prefix = this /home/abdul/arena_camera_ros2/ros2_ws relative to __file__
+    install_path_prefix = Path('./../../')
+    install_path = install_path_prefix / 'install' / \
+        package_name / 'lib' / python_version_name / 'site-packages' / 'arena_api'
+    #install_path = install_path.resolve()
+    #print(install_path)
+    #print('/home/abdul/arena_camera_ros2/ros2_ws/install/arena_camera_node/lib/python3.6/site-packages/arena_api (corr)')
+
+
 
     # remove old if exists
     if install_path.exists():
@@ -110,7 +133,35 @@ def copy_arena_api_files_to_install_dir():
 
     shutil.copytree(arena_api_path, install_path, symlinks=True)
 
+#copy_arena_api_files_to_install_dir()
 
+def get_date_files():
+    # a hack to add the arena_api files to arena install
+    copy_arena_api_files_to_install_dir()
+
+    return [
+
+        # 1 TODO investigate this
+        # ('share/ament_index/resource_index/packages',
+        # ['resource/' + package_name]),
+
+        # 2 package.xml
+        (os.path.join('share', package_name), ['package.xml']),
+
+        # 3 launch files
+        (os.path.join('share', package_name), glob('launch/*'))
+
+        # 4 arena_api package (for now it copys files using a function)
+
+        #,('lib/python3.6/site-packages', [str(copy_arena_api_files_to_install_dir())])
+        #,('lib/python3.6/site-packages/', ['NoneHACK'])
+        
+        # ('lib/python3.6/site-packages__2', glob('../../../../*.txt', recursive=True) # works as home
+        # ('lib/python3.6/site-packages__2', glob('../../../../../../*.txt', recursive=True) # works as root
+        # ('lib/python3.6/site-packages__2',
+        # glob('../../../../../../home/abdul/arena_camera_ros2/ros2_ws/ve_dev/lib/python3.6/site-packages/arena_api/*', recursive=True)) # work with _colcon
+        #('lib/python3.6/site-packages__2', hard_arena_api_paths())
+    ]
 
 setup(
     name=package_name,
@@ -121,28 +172,7 @@ setup(
     packages=[package_name],
 
     # Files we want to install, specifically launch files
-    data_files=[
-
-        # 1 TODO investigate this
-        # ('share/ament_index/resource_index/packages',
-        # ['resource/' + package_name]),
-
-        # 2 package.xml
-        (os.path.join('share', package_name), ['package.xml']),
-
-        # 3 launch files
-        (os.path.join('share', package_name), glob('launch/*')),
-
-        # 4 arena_api package (for now it copys files using a function)
-
-        ('lib/python3.6/site-packages', [str(copy_arena_api_files_to_install_dir())])
-        # ('lib/python3.6/site-packages__2', glob('../../../../*.txt', recursive=True) # works as home
-        # ('lib/python3.6/site-packages__2', glob('../../../../../../*.txt', recursive=True) # works as root
-        # ('lib/python3.6/site-packages__2',
-        # glob('../../../../../../home/abdul/arena_camera_ros2/ros2_ws/ve_dev/lib/python3.6/site-packages/arena_api/*', recursive=True)) # work with _colcon
-        #('lib/python3.6/site-packages__2', hard_arena_api_paths())
-
-    ],
+    data_files=get_date_files() ,
 
     install_requires=['setuptools'],
     #install_requires=['setuptools', 'arena_api'],
