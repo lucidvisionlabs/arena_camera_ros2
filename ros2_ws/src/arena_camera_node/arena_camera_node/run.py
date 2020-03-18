@@ -1,16 +1,16 @@
 
 import time
-from arena_api import sys
-# /home/abdul/ software/arena_api
-# /home/abdul/ arena_camera_ros2/ros2_ws/build/arena_camera_node
+from jira import JIRA
+from arena_api import system
 
 
 def run():
-    help("modules")
     count = 0
-    while(True):
+    while(not count or count < 10):
         count += 1
-        print(f'arena_node {count} | seeing {len(system.device_info)} devices')
+        array = np.arange(20)
+        print(f'arena_node {count} | seeing ')
+        # {len(system.device_info)} devices')
 
         time.sleep(1.5)
 

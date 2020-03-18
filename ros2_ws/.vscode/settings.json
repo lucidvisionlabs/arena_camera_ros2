@@ -1,3 +1,3 @@
 {
-    "python.pythonPath": "/home/abdul/arena_camera_ros2/ros2_ws/ve_dev/bin/python3.6"
+    "python.pythonPath": "ve_dev/bin/python"
 }

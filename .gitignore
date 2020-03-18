@@ -3,3 +3,5 @@ ve_dev
 log
 build
 install
+dist
+*.egg-info
