@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "/home/abdul/arena_camera_ros2/ros2_ws"
+		},
+		{
+			"path": "/home/abdul/software/arena_api"
+		},
+		{
+			"path": "/opt/ros/dashing/share/std_msgs/msg"
+		}
+	],
+	"settings": {
+		"python.pythonPath": "ve_dev/bin/python",
+	}
+}
