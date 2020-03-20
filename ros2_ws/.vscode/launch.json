@@ -5,11 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Python: setup",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/arena_camera_node/setup.py",
-            "args": [""],
+            "args": [
+                ""
+            ],
             "console": "integratedTerminal"
         }
     ]

@@ -15,7 +15,11 @@
 
   
   <exec_depend>rclpy</exec_depend>
-  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  
+  <!-- create sensor_msgs Image-->
+
+  <exec_depend>python3-numpy</exec_depend> 
 
 
   <!-- TEST  DEB ___________________________________________________________-->
