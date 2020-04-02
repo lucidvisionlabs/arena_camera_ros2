@@ -5,11 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
+            "name": "node : run",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal"
+            "program": "${workspaceFolder}/src/arena_camera_node/arena_camera_node/run.py",
+            //"console": "integratedTerminal",
+            "console": "externalTerminal",
+            "args": [
+                "--ros-args",
+                "-p",
+                "__foo:=foo_val_cmndline"
+            ],
+            "pythonPath": "${workspaceFolder}/ve_dev_debug/bin/python" // for numpy
         },
         {
             "name": "Python: setup",
