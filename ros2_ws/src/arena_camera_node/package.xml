@@ -7,21 +7,19 @@
   <maintainer email="support@thinklucid.com"></maintainer>
   <license>TODO:</license>
 
-  <!-- BUILD DEB __________________________________________________________ -->
 
+  <!-- BOTH BUILD AND EXEC DEB _____________________________________________-->
+  <!-- create sensor_msgs Image-->
+  <depend>python3-numpy</depend> 
+
+
+  <!-- BUILD DEB __________________________________________________________ -->
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <!-- EXEC  DEB ___________________________________________________________-->
-
-  
+  <!-- EXEC  DEB ___________________________________________________________-->  
   <exec_depend>rclpy</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
   
-  <!-- create sensor_msgs Image-->
-
-  <exec_depend>python3-numpy</exec_depend> 
-
-
   <!-- TEST  DEB ___________________________________________________________-->
 
   <!--
