@@ -125,7 +125,7 @@ setup(
 
     entry_points={
         'console_scripts': [
-            'run = arena_camera_node.run:run'
+            'start = arena_camera_node.run:run'
         ],
     },
 )
