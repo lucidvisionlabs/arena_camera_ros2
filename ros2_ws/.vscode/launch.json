@@ -9,13 +9,25 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/arena_camera_node/arena_camera_node/run.py",
-            //"console": "integratedTerminal",
-            "console": "externalTerminal",
+            "console": "integratedTerminal",
             "args": [
                 "--ros-args",
                 "-p",
-                "__foo:=foo_val_cmndline"
+                "serial:=904240001",
+                "-p",
+                "topic:=newnewnew",
+                "-p",
+                "width:=100",
+                "-p",
+                "height:=100",
+                "-p",
+                "pixelformat:=rgb8",
+                "-p",
+                "exposure_auto:=false",
+                "-p",
+                "exposure_time:=\"50\"",
             ],
+            "justMyCode": false,
             "pythonPath": "${workspaceFolder}/ve_dev_debug/bin/python" // for numpy
         },
         {
