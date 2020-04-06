@@ -14,7 +14,6 @@
 
 
   <!-- BUILD DEB __________________________________________________________ -->
-  <buildtool_depend>ament_cmake</buildtool_depend>
 
   <!-- EXEC  DEB ___________________________________________________________-->  
   <exec_depend>rclpy</exec_depend>
