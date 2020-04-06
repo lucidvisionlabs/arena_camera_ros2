@@ -26,6 +26,8 @@
                 "exposure_auto:=false",
                 "-p",
                 "exposure_time:=\"50\"",
+                "-p",
+                "trigger_mode:=true",
             ],
             "justMyCode": false,
             "pythonPath": "${workspaceFolder}/ve_dev_debug/bin/python" // for numpy
