@@ -1,7 +1,10 @@
 version: "3.2"
 services:
-  ros2dev:
-    image: arenacameraros2
+  ros2_arena_camera_node_dev:
+    #environment:
+    #  - COMPOSE_CONVERT_WINDOWS_PATHS=true
+    build:
+      context: .
+      dockerfile: ros_eloquent_desktop.dockerfile
     volumes:
-      - ./:/opt/ros2_ws
-    
+      - ./:/opt/
