@@ -9,9 +9,10 @@ from rclpy.parameter import Parameter
 from rclpy.qos import HistoryPolicy
 from sensor_msgs.msg import Image
 
-from _enum_translator import ROS2PixelFormat
-from device_manager import DeviceCreationManager
-from image_publisher import ImagePublisherHelper
+from arena_camera_node._enum_translator import ROS2PixelFormat
+from arena_camera_node.device_manager import DeviceCreationManager
+from arena_camera_node.image_publisher import ImagePublisherHelper
+#from arena_camera_node.srv import trigger_image
 
 
 class ArenaCameraNode(Node):
@@ -45,6 +46,10 @@ class ArenaCameraNode(Node):
         self.declare_parameter(name='exposure_time', value=-1)
         self.declare_parameter(name='trigger_mode', value='false')
 
+        # services -----------------------------------------
+        self.srv = self.create_service(
+            trigger_image, 'trigger_image', self._publish_images_at_trigger)
+
     def run(self):
 
         # device -------------------------------------------
@@ -57,7 +62,10 @@ class ArenaCameraNode(Node):
         # streaming ----------------------------------------
         with self._device.start_stream():
             # publish images -------------------------------
-            self._publish_images()
+            if self.trigger_mode_active:
+                self._publish_images_at_trigger()
+            else:
+                self._publish_images()
 
     def _wait_until_a_device_is_discovered(self):
         self._wait_for_devices_secs = system.DEVICE_INFOS_TIMEOUT_MILLISEC / 1000
@@ -206,8 +214,45 @@ class ArenaCameraNode(Node):
                 self._log_warn(f'Exception occurred when grabbing '
                                f'an image\n{e}')
 
+    def _publish_images_at_trigger(self, request, response):
+        # when here the device is assumed to be already streaming
 
-def run(args=None):
+        # later this is the frame rate
+        topic = f"{self.get_name()}/{self.get_parameter('topic').value}"
+        self._image_publisher = self.create_publisher(
+            msg_type=Image,
+            topic=topic,
+            qos_profile=HistoryPolicy.SYSTEM_DEFAULT)
+
+        is_armed = self._device.nodemap['TriggerArmed']
+        while not is_armed.value:
+            continue
+        try:
+            self._buffer = self._device.get_buffer()
+            self._image_msg = ImagePublisherHelper.msg_from_buffer(
+                self._buffer)
+            self._image_publisher.publish(self._image_msg)
+            self._log_info(
+                f'image{self._buffer.frame_id} published to {topic}')
+            self._device.requeue_buffer(self._buffer)
+            response.published = True
+            response.topic = topic
+
+        except Exception as e:
+            # clean up
+            if self._buffer:
+                self._device.requeue_buffer(self._buffer)
+                self._buffer = None
+            self._log_warn(f'Exception occurred when grabbing '
+                           f'an image\n{e}')
+            response.published = False
+            response.topic = None
+        self.destroy_publisher(self._image_publisher)
+
+        return response
+
+
+def arena_camera_runner(args=None):
 
     rclpy.init(args=args)
 
@@ -226,10 +271,62 @@ def run(args=None):
         # (optional - otherwise it will be done automatically
         # when the garbage collector destroys the node object)
         arena_camera_node.destroy_node()
-        print('node destroyed')
+        print('node \"arena_camera_node\" destroyed')
         rclpy.shutdown()
         print('rclpy shutdown')
 
+# ----------------------------------------------------------
+#
+#
+# ----------------------------------------------------------
+
+
+class TriggerClientNode(Node):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cli = self.create_client(trigger_image, 'trigger_image_hi')
+
+        while not self.cli.wait_for_service(timeout_sec=0.5):
+            self.get_logger().info('service not available, waiting again...')
+            self.req = trigger_image.Request()
+
+    def send_request(self):
+        self.future = self.cli.call_async(self.req)
+
+
+def trigger_client_runner(args=None):
+
+    rclpy.init(args=args)
+
+    trigger_client = TriggerClientNode(node_name='trigger_image_node',
+                                       namespace='arena_camera_node')
+    trigger_client.send_request()
+
+    while rclpy.ok():
+        rclpy.spin_once(trigger_client)
+        if trigger_client.future.done():
+            try:
+                response = trigger_client.future.result()
+                if not response.publish:
+                    raise Exception(f'Image pulisher failed to publish Image '
+                                    f'on trigger')
+            except Exception as e:
+                trigger_client.get_logger().info(
+                    'Service call failed %r' % (e,))
+            else:
+                trigger_client.get_logger().info(f'Image has been published '
+                                                 f'to {response.topic}')
+            break
+
+    trigger_client.destroy_node()
+    print('node \"trigger_client\" destroyed')
+    # rclpy.shutdown()
+
+# ----------------------------------------------------------
+#
+#
+# ----------------------------------------------------------
+
 
 if __name__ == '__main__':
-    run()
+    arena_camera_runner()

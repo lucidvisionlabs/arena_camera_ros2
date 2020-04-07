@@ -56,6 +56,7 @@ if [ $INSTALL_ROS2 -eq 1 ]; then
     # package dep
     #   - sudo apt-get update
     #   - sudo apt-get install python-rosdep
+    #   - sudo rosdep init
     
     # for each package root run  to install package dep
     #   - sudo rosdep install -i --from-path src --rosdistro $ROS_DISTRO -y
