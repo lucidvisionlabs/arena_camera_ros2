@@ -12,7 +12,7 @@ from sensor_msgs.msg import Image
 from arena_camera_node._enum_translator import ROS2PixelFormat
 from arena_camera_node.device_manager import DeviceCreationManager
 from arena_camera_node.image_publisher import ImagePublisherHelper
-#from arena_camera_node.srv import trigger_image
+from arena_camera_trigger.srv import TriggerImage
 
 
 class ArenaCameraNode(Node):
@@ -48,7 +48,7 @@ class ArenaCameraNode(Node):
 
         # services -----------------------------------------
         self.srv = self.create_service(
-            trigger_image, 'trigger_image', self._publish_images_at_trigger)
+            TriggerImage, 'trigger_image', self._publish_images_at_trigger)
 
     def run(self):
 
@@ -63,7 +63,8 @@ class ArenaCameraNode(Node):
         with self._device.start_stream():
             # publish images -------------------------------
             if self.trigger_mode_active:
-                self._publish_images_at_trigger()
+                pass
+                # self._publish_images_at_trigger()
             else:
                 self._publish_images()
 
@@ -256,10 +257,10 @@ def arena_camera_runner(args=None):
 
     rclpy.init(args=args)
 
+    arena_camera_node = ArenaCameraNode(node_name='arena_camera_node',
+                                        # allow_undeclared_parameters=True,
+                                        )
     try:
-        arena_camera_node = ArenaCameraNode(node_name='arena_camera_node',
-                                            # allow_undeclared_parameters=True,
-                                            )
 
         arena_camera_node.run()
 
@@ -274,58 +275,6 @@ def arena_camera_runner(args=None):
         print('node \"arena_camera_node\" destroyed')
         rclpy.shutdown()
         print('rclpy shutdown')
-
-# ----------------------------------------------------------
-#
-#
-# ----------------------------------------------------------
-
-
-class TriggerClientNode(Node):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.cli = self.create_client(trigger_image, 'trigger_image_hi')
-
-        while not self.cli.wait_for_service(timeout_sec=0.5):
-            self.get_logger().info('service not available, waiting again...')
-            self.req = trigger_image.Request()
-
-    def send_request(self):
-        self.future = self.cli.call_async(self.req)
-
-
-def trigger_client_runner(args=None):
-
-    rclpy.init(args=args)
-
-    trigger_client = TriggerClientNode(node_name='trigger_image_node',
-                                       namespace='arena_camera_node')
-    trigger_client.send_request()
-
-    while rclpy.ok():
-        rclpy.spin_once(trigger_client)
-        if trigger_client.future.done():
-            try:
-                response = trigger_client.future.result()
-                if not response.publish:
-                    raise Exception(f'Image pulisher failed to publish Image '
-                                    f'on trigger')
-            except Exception as e:
-                trigger_client.get_logger().info(
-                    'Service call failed %r' % (e,))
-            else:
-                trigger_client.get_logger().info(f'Image has been published '
-                                                 f'to {response.topic}')
-            break
-
-    trigger_client.destroy_node()
-    print('node \"trigger_client\" destroyed')
-    # rclpy.shutdown()
-
-# ----------------------------------------------------------
-#
-#
-# ----------------------------------------------------------
 
 
 if __name__ == '__main__':

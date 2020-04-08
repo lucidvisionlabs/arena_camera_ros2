@@ -4,21 +4,26 @@
 			"path": "."
 		},
 		{
-			"path": "/home/abdul/software"
+			"path": "~/software" // ArenaSDK repo
+		},
+		{
+			"path": "~/arena_camera_ros/catkin_ws" // ROS1 Package for ref
 		}
 	],
 	"settings": {
+
 		"files.autoSave": "afterDelay",
 		"files.autoSaveDelay": 5000,
-		"python.pythonPath": "${workspaceFolder}:ros2_ws/ve_dev/bin/python",
-		//"python.pythonPath": "ve_dev/bin/python",
-		"cSpell.words": [
-			"rclpy"
-		],
-		"python.linting.pylintEnabled": true,
+		"python.pythonPath": "${workspaceFolder:ros2_ws}/ve_dev/bin/python",
+		
 		"python.linting.enabled": true,
+		"python.linting.pylintEnabled": true,
 		"python.jediEnabled": true,
 		"python.jediMemoryLimit": 0,
 		"python.languageServer": "Jedi",
+		
+		"cSpell.words": [
+			"rclpy"
+		],
 	},
 }

@@ -58,7 +58,7 @@ if [ $INSTALL_ROS2 -eq 1 ]; then
     #   - sudo apt-get install python-rosdep
     #   - sudo rosdep init
     
-    # for each package root run  to install package dep
+    # for each package to install package deps run
     #   - sudo rosdep install -i --from-path src --rosdistro $ROS_DISTRO -y
     #   - arena_camera uses image msg which require python3-numpy
     #     if was not installed by the rosdep for some reason, install using:
@@ -70,7 +70,10 @@ if [ $INSTALL_ROS2 -eq 1 ]; then
     #   - colcon build
     #   - echo "source <X>/setup.bash" >> ~/.bashrc
     #   - echo "source <X>/setup.zsh>" >> ~/.zshrc
-    
+    #   - to run 
+
+    # virtual_env
+    #   - pip install lark-parser # for building services 
     
 fi
 

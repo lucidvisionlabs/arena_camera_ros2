@@ -30,7 +30,7 @@
                 "trigger_mode:=true",
             ],
             "justMyCode": false,
-            "pythonPath": "${workspaceFolder:ros2_ws}/ve_dev_debug/bin/python" // for numpy
+            "pythonPath": "${workspaceFolder:ros2_ws}/ve_dev/bin/python"
         },
         {
             "name": "Python: setup",
@@ -44,4 +44,6 @@
         }
     ]
 }
-//--ros-args -p serial:=904240001 -p topic:=newnewnew -p width:=100 -p height:=100 -p pixelformat:=rgb8 -p exposure_auto:=false -p exposure_time:=50 -p trigger_mode:=true
+/*
+ros2 run arena_camera_node run --ros-args -p serial:=904240001 -p topic:=newnewnew -p width:=100 -p height:=100 -p pixelformat:=rgb8 -p exposure_auto:=false -p exposure_time:=50 -p trigger_mode:=true
+*/
