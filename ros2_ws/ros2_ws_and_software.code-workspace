@@ -11,17 +11,14 @@
 		}
 	],
 	"settings": {
-
 		"files.autoSave": "afterDelay",
 		"files.autoSaveDelay": 5000,
 		"python.pythonPath": "${workspaceFolder:ros2_ws}/ve_dev/bin/python",
-		
 		"python.linting.enabled": true,
 		"python.linting.pylintEnabled": true,
-		"python.jediEnabled": true,
+		"python.jediEnabled": false, // if slow set it true to disable microsoft one
 		"python.jediMemoryLimit": 0,
 		"python.languageServer": "Jedi",
-		
 		"cSpell.words": [
 			"rclpy"
 		],
