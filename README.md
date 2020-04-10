@@ -8,20 +8,24 @@ Arena Camera deriver for ROS2
 - OS       : Linux (x64/amd64) (>=18.04) 
 - ROS2     : Eloquent distro (installation steps in ros2_arena_setup.sh)
 - ArenaSDK : Contact support@thinklucid.com
-- arena_pi : Contact support@thinklucid.com
+- arena_api : Contact support@thinklucid.com
 
 # Getting Started
 - clone repo
-    `git clone https://github.com/lucidvisionlabs/arena_camera_ros2.git # clone repo`
+    
+    `git clone https://github.com/lucidvisionlabs/arena_camera_ros2.git`
 
 - install ROS2 and setup the environment 
-    `cat arena_camera_ros2\ros2_arena_setup.sh # inspect the script before running it`
-    `cd arena_camera_ros2 ; sudo sh -c ros2_arena_setup.sh # installs ROS2 Eloquent distro`
+    
+    `cat arena_camera_ros2\ros2_arena_setup.sh` to view the script
+
+    `cd arena_camera_ros2 ; sudo sh ros2_arena_setup.sh` installs ROS2 Eloquent distro
 
 - install ArenaSDK and arena_api
   - contact support@thinklucid.com
 
 - build workspace
+    
     `cd arena_camera_ros2\ros2_ws && colcon build --symlink-install # build workspace`
 
 # Explore
@@ -80,8 +84,8 @@ Arena Camera deriver for ROS2
             `ros2 run arena_camera_node run --ros-args -p serial:=904240001 -p topic:=special_images -p width:=100 -p height:=200 -p pixelformat:=rgb8 -p exposure_auto:=false -p exposure_time:=150 -p trigger_mode:=true` 
 
     explore excutables
-        
-        `ros2 pkg executables | grep arena`
+
+        ros2 pkg executables | grep arena
     
     all excutables can be run by using 
         
