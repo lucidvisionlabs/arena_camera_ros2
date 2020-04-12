@@ -6,3 +6,4 @@ build
 install
 dist
 *.egg-info
+.ropeproject

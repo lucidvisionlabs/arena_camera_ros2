@@ -126,6 +126,8 @@ setup(
     entry_points={
         'console_scripts': [
             'run = arena_camera_node.run:arena_camera_runner',
+            'trigger_image_service = arena_camera_node.trigger_image_service:trigger_image_service_fn',
+            'trigger_image_client = arena_camera_node.trigger_image_client:trigger_image_client_fn',
         ],
     },
 )

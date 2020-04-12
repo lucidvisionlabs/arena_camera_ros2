@@ -5,6 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "current_file",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            //"pythonPath": "${workspaceFolder:ros2_ws}/ve_dev/bin/python"
+        },
+        {
             "name": "node : run",
             "type": "python",
             "request": "launch",
@@ -30,7 +38,7 @@
                 "trigger_mode:=true",
             ],
             "justMyCode": false,
-            "pythonPath": "${workspaceFolder:ros2_ws}/ve_dev/bin/python"
+            //"pythonPath": "${workspaceFolder:ros2_ws}/ve_dev/bin/python"
         },
         {
             "name": "Python: setup",
