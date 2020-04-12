@@ -1,10 +1,11 @@
 version: "3.2"
 services:
-  ros2_arena_camera_node_dev:
-    #environment:
-    #  - COMPOSE_CONVERT_WINDOWS_PATHS=true
+  development:
     build:
       context: .
-      dockerfile: ros_eloquent_desktop.dockerfile
+      dockerfile: Dockerfile
     volumes:
-      - ./:/opt/
+      - .:/arena_camera_ros2
+    # lucid devices container can see
+    #command:
+    #  ["/ArenaSDK_Linux_x64/precompiledExamples/./IpConfigUtility", "/list"]
