@@ -45,7 +45,7 @@ def trigger_image_client_fn(args=None):
                     'Service call failed %r' % (e,))
             else:
                 trigger_client.get_logger().info(f'Image has been published '
-                                                 f'to "\{response.topic}\"')
+                                                 f'to \"{response.topic}\"')
             break
 
     trigger_client.destroy_node()
