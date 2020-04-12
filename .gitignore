@@ -6,3 +6,5 @@ build
 install
 dist
 *.egg-info
+*.tar.gz
+*.whl
