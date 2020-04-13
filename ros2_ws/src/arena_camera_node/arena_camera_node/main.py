@@ -8,10 +8,9 @@ from rclpy.qos import HistoryPolicy
 from sensor_msgs.msg import Image
 from std_srvs.srv import Trigger
 
+from arena_camera_node._enum_translator import ROS2PixelFormat
 from arena_camera_node.device_manager import DeviceCreationManager
 from arena_camera_node.image_publisher import ImagePublisherHelper
-
-from arena_camera_node._enum_translator import ROS2PixelFormat
 
 
 class ArenaCameraNode(Node):

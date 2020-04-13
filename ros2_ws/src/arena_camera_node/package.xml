@@ -24,7 +24,7 @@
   -->
   <exec_depend>rclpy</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
-  <exec_depend>arena_camera_software_trigger</exec_depend>
+  <exec_depend>std_srvs</exec_depend>
 
 
   <!--
