@@ -1,21 +1,17 @@
-from threading import Thread
 
 import rclpy
 from arena_api import enums
-from arena_api.buffer import BufferFactory
 from arena_api.system import system
-from arena_camera_software_trigger.srv import TriggerImage
-from rcl_interfaces.msg import (ParameterDescriptor, ParameterType,
-                                ParameterValue)
 from rclpy.node import Node
 from rclpy.parameter import Parameter
 from rclpy.qos import HistoryPolicy
 from sensor_msgs.msg import Image
+from std_srvs.srv import Trigger
 
-from arena_camera_node._enum_translator import ROS2PixelFormat
 from arena_camera_node.device_manager import DeviceCreationManager
 from arena_camera_node.image_publisher import ImagePublisherHelper
-from arena_camera_node.trigger_image_service import trigger_image_service_fn
+
+from arena_camera_node._enum_translator import ROS2PixelFormat
 
 
 class ArenaCameraNode(Node):
@@ -38,7 +34,8 @@ class ArenaCameraNode(Node):
         # self.declare_parameter(name='ip', value=None)
         # self.declare_parameter(name='mac', value=Node)
         # self.declare_parameter(name='id', value=Node)
-        self.declare_parameter(name='topic', value='images')
+        self.declare_parameter(
+            name='topic', value=f'/{self.get_name()}/images')
 
         # Nodes
         self.declare_parameter(name='gain', value=None)
@@ -59,15 +56,15 @@ class ArenaCameraNode(Node):
         self._set_nodes()
 
         # services -----------------------------------------
-        self.th = Thread(target=trigger_image_service_fn,
-                         kwargs={'device': self._device,
-                                 'is_trigger_mode_active': self.trigger_mode_active})
-        self.th.start()
+
+        self._srv = self.create_service(Trigger, 'trigger_image',
+                                        self._publish_images_at_trigger)
         # streaming ----------------------------------------
-        with self._device.start_stream():
-            # publish images -------------------------------
-            if not self.trigger_mode_active:
-                self._publish_images()
+        self._device.start_stream()
+
+        # publish images -------------------------------
+        if not self.trigger_mode_active:
+            self._publish_images()
 
     def _wait_until_a_device_is_discovered(self):
         self._wait_for_devices_secs = system.DEVICE_INFOS_TIMEOUT_MILLISEC / 1000
@@ -187,7 +184,7 @@ class ArenaCameraNode(Node):
         # when here the device is assumed to be already streaming
 
         # later this is the frame rate
-        topic = f"{self.get_name()}/{self.get_parameter('topic').value}"
+        topic = self.get_parameter('topic').value
         self._image_publisher = self.create_publisher(
             msg_type=Image,
             topic=topic,
@@ -216,27 +213,26 @@ class ArenaCameraNode(Node):
                 self._log_warn(f'Exception occurred when grabbing '
                                f'an image\n{e}')
 
-    '''
     def _publish_images_at_trigger(self, request, response):
         # when here the device is assumed to be already streaming
 
         if not self.trigger_mode_active:
             self._log_warn(f'{self._device} is not in trigger mode. please run'
                            f' {self.get_name()} with trigger_mode:=true first')
-            response.published = False
-            response.topic = ''
             return response
 
         # later this is the frame rate
-        topic = f"{self.get_name()}/{self.get_parameter('topic').value}"
+        topic = self.get_parameter('topic').value
         self._image_publisher = self.create_publisher(
             msg_type=Image,
             topic=topic,
             qos_profile=HistoryPolicy.SYSTEM_DEFAULT)
 
-        is_armed = self._device.nodemap['TriggerArmed']
-        while not is_armed.value:
+        while not self._device.nodemap['TriggerArmed'].value:
             continue
+
+        self._device.nodemap['TriggerSoftware'].execute()
+
         try:
             self._buffer = self._device.get_buffer()
             self._image_msg = ImagePublisherHelper.msg_from_buffer(
@@ -245,8 +241,8 @@ class ArenaCameraNode(Node):
             self._log_info(
                 f'image{self._buffer.frame_id} published to {topic}')
             self._device.requeue_buffer(self._buffer)
-            response.published = True
-            response.topic = topic
+            response.success = True
+            response.message = f'image was published to {topic}'
 
         except Exception as e:
             # clean up
@@ -255,38 +251,27 @@ class ArenaCameraNode(Node):
                 self._buffer = None
             self._log_warn(f'Exception occurred when grabbing '
                            f'an image\n{e}')
-            response.published = False
-            response.topic = ''
+
         self.destroy_publisher(self._image_publisher)
 
         return response
-    '''
 
 
-def arena_camera_runner(args=None):
+def main(args=None):
 
     rclpy.init(args=args)
 
-    arena_camera_node = ArenaCameraNode(node_name='arena_camera_node',
-                                        # allow_undeclared_parameters=True,
-                                        )
+    arena_camera_node = ArenaCameraNode(node_name='arena_camera_node')
     try:
-
         arena_camera_node.run()
-
-        # rclpy.spin_once(arena_camera_node)
         rclpy.spin(arena_camera_node)
-
     finally:
-        arena_camera_node.th.join()
         # Destroy the node explicitly
         # (optional - otherwise it will be done automatically
         # when the garbage collector destroys the node object)
         arena_camera_node.destroy_node()
-        print('node \"arena_camera_node\" destroyed')
         rclpy.shutdown()
-        print('rclpy shutdown')
 
 
 if __name__ == '__main__':
-    arena_camera_runner()
+    main()

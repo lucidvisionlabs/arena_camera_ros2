@@ -32,14 +32,15 @@ Arena Camera deriver for ROS2
 - explore nodes
     - arena_camera_node
       - This is the main node for each device created. It represent a Lucid Camera.
-      - it has two excutables `run` and `trigger_image_client`
+      - it has two excutables `start` and `trigger_image`
       - ros arguments
         - serial 
           - a string representing the serial of the device to create.
           - if not provided the node will represent the first camera it discovers.
         - topic
           - the topic the camera publish images on.
-          - default value is /arena_camera_node/images
+          - default value is /arena_camera_node/images.
+          - if passed as a ros argument, it should be preceded with "/"
         - width
           - the width of desired image
           - default value is the one in `default` user profile.
@@ -67,21 +68,21 @@ Arena Camera deriver for ROS2
         - trigger_mode
           - puts the device in ready state where it will wait for a client to request an image.
           - default value is false. which means the device will be publishing images to the
-            default topic `arena_camera_node/images`.
+            default topic `/arena_camera_node/images`.
           - values are true and false.
           - when false, images can be viewed 
   
-            `ros2 run arena_camera_node run`
-                    `ros2 run image_tools showimage -t /arena_camera_node/images`
+            `ros2 run arena_camera_node start`
+            `ros2 run image_tools showimage -t /arena_camera_node/images`
           
           - when true, image would not be published unless requested/triggered
   
-            `ros2 run arena_camera_node run --ros-args -p trigger_mode:=true`
+            `ros2 run arena_camera_node start --ros-args -p trigger_mode:=true`
             `ros2 run image_tools showimage -t /arena_camera_node/images # no image will be displayed yet`
             `ros2 run arena_camera_node trigger_image`
        - examples for using all arguments
             
-            `ros2 run arena_camera_node run --ros-args -p serial:=904240001 -p topic:=special_images -p width:=100 -p height:=200 -p pixelformat:=rgb8 -p exposure_auto:=false -p exposure_time:=150 -p trigger_mode:=true` 
+            `ros2 run arena_camera_node start --ros-args -p serial:=904240001 -p topic:=/special_images -p width:=100 -p height:=200 -p pixelformat:=rgb8 -p exposure_auto:=false -p exposure_time:=150 -p trigger_mode:=true` 
 
     explore excutables
 
@@ -98,14 +99,13 @@ Arena Camera deriver for ROS2
     - trigger_image 
       - trigger image form a device that is running in trigger_mode.
   
-        - To run a device in trigger mode run 
+        - To run a device in trigger mode
     
-            `ros2 run arena_camera_node --ros-args -p trigger_mode=true`.
+            `ros2 run arena_camera_node start--ros-args -p trigger_mode=true`.
         
         - To trigger an image run 
             
-            `ros2 run arena_camera_node trigger_image_client`
-
+            `ros2 run arena_camera_node trigger_image`
 
 # Road map
 - launch file
@@ -114,6 +114,6 @@ Arena Camera deriver for ROS2
 - access to nodemaps
 - settings dump/read to/from file
 - support two devices
-- support windwos
+- support windows
 - support ARM64 and ARMhf
 - launch file

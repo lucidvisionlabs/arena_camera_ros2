@@ -1,57 +1,68 @@
 import rclpy
-from arena_camera_software_trigger.srv import TriggerImage
+#from arena_camera_software_trigger.srv import TriggerImage
 from rclpy.node import Node
+from std_srvs.srv import Trigger
 
 
 class TriggerClientNode(Node):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        print('TriggerClientNode.__init__  -->  started')
-        self.cli = self.create_client(
-            TriggerImage, 'trigger_image')
+        log_debug = self.get_logger().debug
+        log_info = self.get_logger().info
+
+        self.cli = self.create_client(Trigger, 'trigger_image')
 
         while not self.cli.wait_for_service(timeout_sec=0.5):
-            self.get_logger().info('service not available, waiting again...->')
-        self.req = TriggerImage.Request()
-        print('TriggerClientNode.__init__  -->  done')
+            log_info(f'service not available, waiting again... ->')
+        log_debug('service is available now')
+        self.req = Trigger.Request()
+        log_debug('trigger request object has been created')
 
     def send_request(self):
         self.future = self.cli.call_async(self.req)
 
 
-def trigger_image_client_fn(args=None):
-    print('trigger_image_client_fn  -->  started')
+def main(args=None):
+
+    log_debug = None
+    log_info = None
+
     rclpy.init(args=args)
 
-    trigger_client = TriggerClientNode(node_name='trigger_image_client_node',
-                                       # namespace='arena_camera_node'
-                                       )
-    print('TriggerClientNode  -->  created')
+    trigger_client = TriggerClientNode(node_name='trigger_image_client_node')
+    log_debug = trigger_client.get_logger().debug
+    log_info = trigger_client.get_logger().info
+    log_debug('trigger_image_client_node has been created')
+
     trigger_client.send_request()
-    print('Request sent  -->  created')
+    log_info('trigger_image_client_node sent a request')
 
     while rclpy.ok():
-        print('while loop itr  -->  started')
+        log_debug('trigger_image_client is waiting for a response')
+
         rclpy.spin_once(trigger_client)
-        print('trigger_client_node  -->  spinned_once per itr')
+        log_debug('trigger_image_client spinned once')
+
+        log_debug('checking if responce is received?')
         if trigger_client.future.done():
+            log_debug('responce is received')
             try:
                 response = trigger_client.future.result()
-                if not response.published:
-                    raise Exception(f'Image pulisher failed to publish Image '
-                                    f'on trigger')
+                log_debug('response is read')
+                if not response.success:
+                    log_info('response.success == False')
+                    raise Exception(f'Failed to publish an image on trigger')
             except Exception as e:
-                trigger_client.get_logger().info(
-                    'Service call failed %r' % (e,))
+                log_info('Service call failed %r' % (e,))
             else:
-                trigger_client.get_logger().info(f'Image has been published '
-                                                 f'to \"{response.topic}\"')
+                log_info(response.message)
+            log_debug('breaking the loop')
             break
 
+    log_debug('trigger_image_client is destroyed')
     trigger_client.destroy_node()
-    print('node \"trigger_client_node\" destroyed')
     rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    trigger_image_client_fn()
+    main()

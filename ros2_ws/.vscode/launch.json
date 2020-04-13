@@ -13,17 +13,17 @@
             //"pythonPath": "${workspaceFolder:ros2_ws}/ve_dev/bin/python"
         },
         {
-            "name": "node : run",
+            "name": "node : start",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/src/arena_camera_node/arena_camera_node/run.py",
+            "program": "${workspaceFolder}/src/arena_camera_node/arena_camera_node/main.py",
             "console": "integratedTerminal",
             "args": [
                 "--ros-args",
                 "-p",
                 "serial:=904240001",
                 "-p",
-                "topic:=newnewnew",
+                "topic:=/arena_camera_node/WE_ARE_IAMGES",
                 "-p",
                 "width:=100",
                 "-p",
