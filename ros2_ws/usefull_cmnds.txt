@@ -1,0 +1,12 @@
+# create a srv pkg
+
+# - No python yet so it has to be cmake for now
+# - CMake is why we did not put it in arena_camera_node
+cd src ; ros2 pkg create --build-type ament_cmake <name>
+
+__log_level:=debug
+
+
+_reload ; cd $_ROS2_WS ; _rm_diry_ros2_node ; source /home/abdul/arena_camera_ros2/ros2_ws/ve_dev/bin/activate ; colcon build --symlink-install
+
+ros2 run arena_camera_node run --ros-args -p serial:=904240001 -p topic:=newnewnew -p width:=100 -p height:=100 -p pixelformat:=rgb8 -p exposure_auto:=false -p exposure_time:=50 -p trigger_mode:=true

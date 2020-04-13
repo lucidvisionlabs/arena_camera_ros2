@@ -1,17 +1,16 @@
+
 import rclpy
 from arena_api import enums
-from arena_api.buffer import BufferFactory
 from arena_api.system import system
-from rcl_interfaces.msg import (ParameterDescriptor, ParameterType,
-                                ParameterValue)
 from rclpy.node import Node
 from rclpy.parameter import Parameter
 from rclpy.qos import HistoryPolicy
 from sensor_msgs.msg import Image
+from std_srvs.srv import Trigger
 
-from _enum_translator import ROS2PixelFormat
-from device_manager import DeviceCreationManager
-from image_publisher import ImagePublisherHelper
+from arena_camera_node._enum_translator import ROS2PixelFormat
+from arena_camera_node.device_manager import DeviceCreationManager
+from arena_camera_node.image_publisher import ImagePublisherHelper
 
 
 class ArenaCameraNode(Node):
@@ -26,7 +25,7 @@ class ArenaCameraNode(Node):
         self._log_info = self._log.info
         self._log_warn = self._log.warn
 
-        # params  -------------------------------------------
+        # params  ------------------------------------------
         # device creation
         self.declare_parameter(name='serial', value=None)  # string or number
 
@@ -34,7 +33,8 @@ class ArenaCameraNode(Node):
         # self.declare_parameter(name='ip', value=None)
         # self.declare_parameter(name='mac', value=Node)
         # self.declare_parameter(name='id', value=Node)
-        self.declare_parameter(name='topic', value='images')
+        self.declare_parameter(
+            name='topic', value=f'/{self.get_name()}/images')
 
         # Nodes
         self.declare_parameter(name='gain', value=None)
@@ -43,13 +43,7 @@ class ArenaCameraNode(Node):
         self.declare_parameter(name='pixelformat', value=None)
         self.declare_parameter(name='exposure_auto', value='true')
         self.declare_parameter(name='exposure_time', value=-1)
-
-        # exposuretime
-        # exposure auto?
-
-        # pixelformat NEED TO BE TRANSLATED
-
-        # triggermodes
+        self.declare_parameter(name='trigger_mode', value='false')
 
     def run(self):
 
@@ -60,14 +54,16 @@ class ArenaCameraNode(Node):
         # nodes --------------------------------------------
         self._set_nodes()
 
-        # streaming ----------------------------------------
-        with self._device.start_stream():
-            # publish images ------------------------------------
-            self._publish_images()
+        # services -----------------------------------------
 
-            # Image, 'arena_camera_node_images')
-            # self._publish_images()
-        self._log_info('Done')
+        self._srv = self.create_service(Trigger, 'trigger_image',
+                                        self._publish_images_at_trigger)
+        # streaming ----------------------------------------
+        self._device.start_stream()
+
+        # publish images -------------------------------
+        if not self.trigger_mode_active:
+            self._publish_images()
 
     def _wait_until_a_device_is_discovered(self):
         self._wait_for_devices_secs = system.DEVICE_INFOS_TIMEOUT_MILLISEC / 1000
@@ -107,6 +103,11 @@ class ArenaCameraNode(Node):
                        f'device {self._device}')
 
     def _set_nodes(self):
+
+        # device run on default profile all the time if no args are passed
+        # otherwise, overwise only these params
+        self._device.nodemap['UserSetSelector'].value = 'Default'
+        self._device.nodemap['UserSetLoad'].execute()
 
         gain = self.get_parameter('gain')
         if gain.value:
@@ -152,11 +153,37 @@ class ArenaCameraNode(Node):
             raise ValueError(
                 f'\"exposure_auto\" must be one of [true , false]')
 
+        trigger_mode = self.get_parameter('trigger_mode')
+        if str(trigger_mode.value).lower() == 'true':
+            # Enable trigger mode before setting the source and selector
+            # and before starting the stream. Trigger mode cannot be turned
+            # on and off while the device is streaming.
+
+            # Make sure Trigger Mode set to 'Off' after finishing this example
+            self._device.nodemap['TriggerMode'].value = 'On'
+
+            # Set the trigger source to software in order to trigger buffers
+            # without the use of any additional hardware.
+            # Lines of the GPIO can also be used to trigger.
+            self._device.nodemap['TriggerSource'].value = 'Software'
+            self._device.nodemap['TriggerSelector'].value = 'FrameStart'
+            self._device.tl_stream_nodemap['StreamBufferHandlingMode'].value = 'OldestFirst'
+
+            self.trigger_mode_active = True
+            self._log_info(f'trigger_mode is activated. No images will be '
+                           f'published until images are requested by '
+                           f'trigger_image service')
+        else:
+            # device is not in trigger mode because the user default profile is
+            # set
+            self.trigger_mode_active = False
+            pass
+
     def _publish_images(self):
         # when here the device is assumed to be already streaming
 
         # later this is the frame rate
-        topic = f"{self.get_name()}/{self.get_parameter('topic').value}"
+        topic = self.get_parameter('topic').value
         self._image_publisher = self.create_publisher(
             msg_type=Image,
             topic=topic,
@@ -164,6 +191,10 @@ class ArenaCameraNode(Node):
 
         while rclpy.ok():
 
+            if self.trigger_mode_active:
+                is_armed = self._device.nodemap['TriggerArmed']
+                while not is_armed.value:
+                    continue
             try:
                 self._buffer = self._device.get_buffer()
                 self._image_msg = ImagePublisherHelper.msg_from_buffer(
@@ -181,30 +212,65 @@ class ArenaCameraNode(Node):
                 self._log_warn(f'Exception occurred when grabbing '
                                f'an image\n{e}')
 
+    def _publish_images_at_trigger(self, request, response):
+        # when here the device is assumed to be already streaming
 
-def run(args=None):
+        if not self.trigger_mode_active:
+            self._log_warn(f'{self._device} is not in trigger mode. please run'
+                           f' {self.get_name()} with trigger_mode:=true first')
+            return response
+
+        # later this is the frame rate
+        topic = self.get_parameter('topic').value
+        self._image_publisher = self.create_publisher(
+            msg_type=Image,
+            topic=topic,
+            qos_profile=HistoryPolicy.SYSTEM_DEFAULT)
+
+        while not self._device.nodemap['TriggerArmed'].value:
+            continue
+
+        self._device.nodemap['TriggerSoftware'].execute()
+
+        try:
+            self._buffer = self._device.get_buffer()
+            self._image_msg = ImagePublisherHelper.msg_from_buffer(
+                self._buffer)
+            self._image_publisher.publish(self._image_msg)
+            self._log_info(
+                f'image{self._buffer.frame_id} published to {topic}')
+            self._device.requeue_buffer(self._buffer)
+            response.success = True
+            response.message = f'image was published to {topic}'
+
+        except Exception as e:
+            # clean up
+            if self._buffer:
+                self._device.requeue_buffer(self._buffer)
+                self._buffer = None
+            self._log_warn(f'Exception occurred when grabbing '
+                           f'an image\n{e}')
+
+        self.destroy_publisher(self._image_publisher)
+
+        return response
+
+
+def main(args=None):
 
     rclpy.init(args=args)
 
+    arena_camera_node = ArenaCameraNode(node_name='arena_camera_node')
     try:
-        arena_camera_node = ArenaCameraNode(node_name='arena_camera_node',
-                                            # allow_undeclared_parameters=True,
-                                            )
-
         arena_camera_node.run()
-
-        # rclpy.spin_once(arena_camera_node)
         rclpy.spin(arena_camera_node)
-
     finally:
         # Destroy the node explicitly
         # (optional - otherwise it will be done automatically
         # when the garbage collector destroys the node object)
-        # arena_camera_node.destroy_node()
-        print('node destroyed')
-        # rclpy.shutdown(cntx)
-        print('rclpy shutdown')
+        arena_camera_node.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == '__main__':
-    run()
+    main()

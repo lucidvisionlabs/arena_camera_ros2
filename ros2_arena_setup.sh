@@ -43,6 +43,7 @@ if [ $INSTALL_ROS2 -eq 1 ]; then
     sudo apt install ros-eloquent-ros-base --assume-yes
     #   -   Desktop Install (Recommended): ROS, RViz, demos, tutorials.
     sudo apt install ros-eloquent-desktop --assume-yes
+    #sudo apt-get install 'ros-eloquent-launch*' --assume-yes
 
     # env setup --------------------------------------------
     #   - echo "source /opt/ros/eloquent/setup.bash" >> ~/.bashrc

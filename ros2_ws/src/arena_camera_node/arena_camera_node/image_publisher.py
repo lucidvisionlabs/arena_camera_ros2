@@ -1,6 +1,7 @@
 from sensor_msgs.msg import Image
-from _enum_translator import ROS2PixelFormat
+from arena_camera_node._enum_translator import ROS2PixelFormat
 from arena_api import enums
+
 
 class ImagePublisherHelper:
     def __init__(self):

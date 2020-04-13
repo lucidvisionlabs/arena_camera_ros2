@@ -5,17 +5,25 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "node : run",
+            "name": "current_file",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/src/arena_camera_node/arena_camera_node/run.py",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            //"pythonPath": "${workspaceFolder:ros2_ws}/ve_dev/bin/python"
+        },
+        {
+            "name": "node : start",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/arena_camera_node/arena_camera_node/main.py",
             "console": "integratedTerminal",
             "args": [
                 "--ros-args",
                 "-p",
                 "serial:=904240001",
                 "-p",
-                "topic:=newnewnew",
+                "topic:=/arena_camera_node/WE_ARE_IAMGES",
                 "-p",
                 "width:=100",
                 "-p",
@@ -26,9 +34,11 @@
                 "exposure_auto:=false",
                 "-p",
                 "exposure_time:=\"50\"",
+                "-p",
+                "trigger_mode:=true",
             ],
             "justMyCode": false,
-            "pythonPath": "${workspaceFolder}/ve_dev_debug/bin/python" // for numpy
+            //"pythonPath": "${workspaceFolder:ros2_ws}/ve_dev/bin/python"
         },
         {
             "name": "Python: setup",
@@ -42,3 +52,6 @@
         }
     ]
 }
+/*
+ros2 run arena_camera_node run --ros-args -p serial:=904240001 -p topic:=newnewnew -p width:=100 -p height:=100 -p pixelformat:=rgb8 -p exposure_auto:=false -p exposure_time:=50 -p trigger_mode:=true
+*/

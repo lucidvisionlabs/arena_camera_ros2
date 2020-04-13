@@ -6,6 +6,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - .:/arena_camera_ros2
+
+    network_mode: host
     # lucid devices container can see
     #command:
     #  ["/ArenaSDK_Linux_x64/precompiledExamples/./IpConfigUtility", "/list"]

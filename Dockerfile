@@ -12,6 +12,8 @@ FROM osrf/ros:eloquent-desktop
 ARG arenasdk_root_on_host=./resources/ArenaSDK/linux64 
 
 # location of arenasdk parent folder in the container; this is where the tar file would be executed
+# Note:
+# if arenasdk_parent is not in root "/", the ${arenasdk_root} must be updated
 ARG arenasdk_parent=/
 
 # when the tar gets excuted in ${arenasdk_parent}, it create a folder ,arenasdk root,

@@ -1,12 +1,3 @@
 {
-    "python.pythonPath": "ve_dev/bin/python",
-    "cSpell.words": [
-        "rclpy"
-    ],
-    "python.linting.pylintEnabled": true,
-    "python.linting.enabled": true,
-    "python.jediEnabled": true,
-    "python.jediMemoryLimit": 0,
-    "python.languageServer": "Jedi",
-    "files.autoSave": "afterDelay"
+    "python.pythonPath": "ve_dev/bin/python"
 }

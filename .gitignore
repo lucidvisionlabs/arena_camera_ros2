@@ -5,6 +5,7 @@ log
 build
 install
 dist
+.ropeproject
 *.egg-info
 *.tar.gz
 *.whl

@@ -3,29 +3,37 @@
 <package format="3">
   <name>arena_camera_node</name>
   <version>0.0.0</version>
-  <description>Lucid Camera ROS2 Driver</description>
-  <maintainer email="support@thinklucid.com"></maintainer>
-  <license>TODO:</license>
+
+  <description>Lucid Camera ROS2 Driver Node</description>
+  <author>LUCID Vision Labs</author>
+  <maintainer email="support@thinklucid.com">LUCID Vision Labs</maintainer>
+  <license>MIT</license>
 
 
-  <!-- BOTH BUILD AND EXEC DEB _____________________________________________-->
-  <!-- create sensor_msgs Image-->
-  <depend>python3-numpy</depend> 
+  <!-- 
+    NEEDED FOR MULTIPLE REASONS/STAGES
+      https://www.ros.org/reps/rep-0149.html#depend-multiple
 
-
-  <!-- BUILD DEB __________________________________________________________ -->
-  <buildtool_depend>ament_cmake</buildtool_depend>
-
-  <!-- EXEC  DEB ___________________________________________________________-->  
-  <exec_depend>rclpy</exec_depend>
-  <exec_depend>sensor_msgs</exec_depend>
-  
-  <!-- TEST  DEB ___________________________________________________________-->
+      - python3-numpy needed for Image type msgs
+  -->
+  <depend>python3-numpy</depend>
 
   <!--
+    NEEDED AT EXEC TIME
+      https://www.ros.org/reps/rep-0149.html#exec-depend-multiple
+  -->
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>std_srvs</exec_depend>
+
+
+  <!--
+    NEEDED FOR RUNNING PKG UNIT TESTS
+      https://www.ros.org/reps/rep-0149.html#test-depend-multiple
+  -->
+
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
-  -->
 
   <export>
     <build_type>ament_python</build_type>
