@@ -3,9 +3,11 @@
 <package format="3">
   <name>arena_camera_node</name>
   <version>0.0.0</version>
+
   <description>Lucid Camera ROS2 Driver Node</description>
-  <maintainer email="support@thinklucid.com"></maintainer>
-  <license>TODO:</license>
+  <author>LUCID Vision Labs</author>
+  <maintainer email="support@thinklucid.com">LUCID Vision Labs</maintainer>
+  <license>MIT</license>
 
 
   <!-- 

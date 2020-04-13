@@ -2,10 +2,7 @@
 	"folders": [
 		{
 			"path": "."
-		},
-		{
-			"path": "~/software" // ArenaSDK repo
-		},
+		}
 	],
 	"settings": {
 		"files.autoSave": "afterDelay",
