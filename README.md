@@ -29,9 +29,13 @@ Arena Camera deriver for ROS2
 - install ArenaSDK and arena_api
   - contact support@thinklucid.com
 
-- build workspace
-    
-    `cd arena_camera_ros2\ros2_ws && colcon build --symlink-install # build workspace`
+- build workspace and its dependencies
+
+    `cd arena_camera_ros2\ros2_ws`
+
+    `rosdep install --from-paths src --ignore-src -r -y`
+
+    `colcon build --symlink-install # build workspace`
 
 # Explore
 - explore nodes
