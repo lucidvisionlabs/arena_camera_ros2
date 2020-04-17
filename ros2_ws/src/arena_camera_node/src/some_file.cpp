@@ -12,17 +12,73 @@ using namespace std::chrono_literals;
 /* This example creates a subclass of Node and uses std::bind() to register a
  * member function as a callback from the timer. */
 
-class MinimalPublisher : public rclcpp::Node
+class ArenaCameraNode : public rclcpp::Node
 {
  public:
-  MinimalPublisher() : Node("minimal_publisher"), count_(0)
+  ArenaCameraNode() : Node("arena_camera_node")
   {
-    publisher_ = this->create_publisher<std_msgs::msg::String>("topic", 10);
-    timer_ = this->create_wall_timer(
-        500ms, std::bind(&MinimalPublisher::timer_callback, this));
+    RCLCPP_DEBUG(this->get_logger(),
+                 std::string("Creating \"") + this->get_name() + "\" node");
+
+    this->declare_parameter("serial", "");
+    this->declare_parameter("topic",
+                            std::string("/") + this->get_name() + "/images");
+    this->declare_parameter("gain", -1);
+    this->declare_parameter("width", -1);
+    this->declare_parameter("height", -1);
+    this->declare_parameter("pixelformat", "");
+    this->declare_parameter("exposure_auto", true);
+    this->declare_parameter("exposure_time", -1);
+    this->declare_parameter("trigger_mode", false);
   }
+  void run()
+  {
+    // device -------------------------------------------
+    this->wait_until_a_device_is_discovered_();
+    /*
+    this->_create_device();
+
+    // nodes --------------------------------------------
+    this->_set_nodes();
+
+    // services -----------------------------------------
+
+    this->_srv = this->create_service(Trigger, 'trigger_image',
+                                      this->_publish_images_at_trigger);
+    // streaming ----------------------------------------
+    this->_device->start_stream();
+
+    // publish images -------------------------------
+    if (!(this->trigger_mode_active)) {
+      this->_publish_images();
+    }
+    */
+  };
 
  private:
+  void wait_until_a_device_is_discovered_()
+  {
+    pSystem_ = Arena::OpenSystem();
+    auto device_infos = std::vector<Arena::DeviceInfo>();
+    /*
+      while (!device_infos.size()) {
+        if (!rclcpp::ok()) {
+          RCLCPP_ERROR(this->get_logger(),
+                       "Interrupted while waiting for arena camera. Exiting.");
+          rclcpp::shutdown();
+        }
+        RCLCPP_INFO(this->get_logger(),
+                    "No arena camera is discovered. Waiting for a camera to be "
+                    "connected!");
+        pSystem_->UpdateDevices(100);  // in millisec
+        device_infos = pSystem_->GetDevices();
+      }
+
+      RCLCPP_INFO(this->get_logger(), "Discovered %d devices",
+                  std::to_string(device_infos.size()));
+      */
+  };
+
   void timer_callback()
   {
     auto message = std_msgs::msg::String();
@@ -33,38 +89,13 @@ class MinimalPublisher : public rclcpp::Node
   rclcpp::TimerBase::SharedPtr timer_;
   rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
   size_t count_;
+  Arena::ISystem* pSystem_;
 };
 
 int main(int argc, char* argv[])
 {
-  try {
-    std::cout << "Try block";
-    // prepare example
-    Arena::ISystem* pSystem = Arena::OpenSystem();
-    pSystem->UpdateDevices(100);
-    std::vector<Arena::DeviceInfo> deviceInfos = pSystem->GetDevices();
-    if (deviceInfos.size() == 0) {
-      std::cout << "\nNo camera connected\nPress enter to complete\n";
-      std::getchar();
-      return 0;
-    }
-    Arena::IDevice* pDevice = pSystem->CreateDevice(deviceInfos[0]);
-    // clean up example
-    pSystem->DestroyDevice(pDevice);
-    Arena::CloseSystem(pSystem);
-  } catch (GenICam::GenericException& ge) {
-    std::cout << "\nGenICam exception thrown: " << ge.what() << "\n";
-    return -1;
-  } catch (std::exception& ex) {
-    std::cout << "\nStandard exception thrown: " << ex.what() << "\n";
-    return -1;
-  } catch (...) {
-    std::cout << "\nUnexpected exception thrown\n";
-    return -1;
-  }
-  std::cout << "PASS" << '\n';
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<MinimalPublisher>());
+  rclcpp::spin(std::make_shared<ArenaCameraNode>());
   rclcpp::shutdown();
   return 0;
 }
