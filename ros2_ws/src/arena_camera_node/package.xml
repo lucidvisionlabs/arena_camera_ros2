@@ -16,7 +16,13 @@
 
       - python3-numpy needed for Image type msgs
         <depend>python3-numpy</depend>
+  <depend>ament_cmake</depend>
+  <depend>ament_cmake_python</depend>
+
   -->
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
+
 
 
   <!--
@@ -24,8 +30,8 @@
       https://www.ros.org/reps/rep-0149.html#buildtool-depend-multiple
         <buildtool_depend>ament</buildtool_depend>
   <buildtool_depend>ament_cmake_python</buildtool_depend>
-  -->
   <buildtool_depend>ament_cmake</buildtool_depend>
+  -->
 
   <!--
     NEEDED AT EXEC TIME
