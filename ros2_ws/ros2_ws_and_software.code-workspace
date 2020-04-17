@@ -2,6 +2,15 @@
   "folders": [
     {
       "path": "."
+    },
+    {
+      "path": "../../arena_camera_ros"
+    },
+    {
+      "path": "../../ArenaSDK_Linux_x64"
+    },
+    {
+      "path": "../../software"
     }
   ],
   "settings": {
@@ -14,6 +23,9 @@
     "python.jediEnabled": false, // if slow set it true to disable microsoft one
     "python.jediMemoryLimit": 0,
     "python.languageServer": "Jedi",
-    "cSpell.words": ["rclpy", "srvs"]
-  }
+    "cSpell.words": [
+      "rclpy",
+      "srvs"
+    ],
+  },
 }
