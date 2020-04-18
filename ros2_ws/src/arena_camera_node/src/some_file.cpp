@@ -1,11 +1,11 @@
 #include <chrono>
-#include <functional>
-#include <memory>
+//#include <functional>
+//#include <memory>
 #include <string>
 
 #include "ArenaApi.h"
 #include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
+//#include "std_msgs/msg/string.hpp"
 
 using namespace std::chrono_literals;
 
@@ -15,10 +15,11 @@ using namespace std::chrono_literals;
 class ArenaCameraNode : public rclcpp::Node
 {
  public:
-  ArenaCameraNode() : Node("arena_camera_node")
+  ArenaCameraNode()
+      : Node("arena_camera_node"), pSystem_(nullptr), pDevice_(nullptr)
   {
-    RCLCPP_DEBUG(this->get_logger(),
-                 std::string("Creating \"") + this->get_name() + "\" node");
+    RCLCPP_INFO(this->get_logger(),
+                std::string("Creating \"") + this->get_name() + "\" node");
 
     this->declare_parameter("serial", "");
     this->declare_parameter("topic",
@@ -30,9 +31,18 @@ class ArenaCameraNode : public rclcpp::Node
     this->declare_parameter("exposure_auto", true);
     this->declare_parameter("exposure_time", -1);
     this->declare_parameter("trigger_mode", false);
-  }
+
+    run();
+  };
+  ~ArenaCameraNode()
+  {
+    // pSystem_->DestroyDevice(pDevice_);
+    Arena::CloseSystem(pSystem_);
+  };
   void run()
   {
+    RCLCPP_INFO(this->get_logger(), " run()");
+
     // device -------------------------------------------
     this->wait_until_a_device_is_discovered_();
     /*
@@ -53,43 +63,48 @@ class ArenaCameraNode : public rclcpp::Node
       this->_publish_images();
     }
     */
+    RCLCPP_INFO(this->get_logger(), "-> ", std::string(__FILE__), "<=");
+    RCLCPP_INFO(this->get_logger(), " run() done ");
   };
 
  private:
   void wait_until_a_device_is_discovered_()
   {
+    // update devices is a blocking call and we need to get to spin;
+    // use Node::create_wall_timer() to get non blocking call
     pSystem_ = Arena::OpenSystem();
     auto device_infos = std::vector<Arena::DeviceInfo>();
+    pSystem_->UpdateDevices(100);  // in millisec
+    device_infos = pSystem_->GetDevices();
+
+    auto check = []() { std::cout << "Lambda" << '\n'; };
+
+    auto timer = this->create_wall_timer(2s, check);
+
     /*
-      while (!device_infos.size()) {
+      while (device_infos.size()) {
         if (!rclcpp::ok()) {
           RCLCPP_ERROR(this->get_logger(),
                        "Interrupted while waiting for arena camera. Exiting.");
           rclcpp::shutdown();
+          return;
         }
         RCLCPP_INFO(this->get_logger(),
                     "No arena camera is discovered. Waiting for a camera to be "
                     "connected!");
-        pSystem_->UpdateDevices(100);  // in millisec
+        pSystem_->UpdateDevices(wait_time_millsec);
         device_infos = pSystem_->GetDevices();
       }
 
       RCLCPP_INFO(this->get_logger(), "Discovered %d devices",
-                  std::to_string(device_infos.size()));
-      */
-  };
-
-  void timer_callback()
-  {
-    auto message = std_msgs::msg::String();
-    message.data = "Hello, world! " + std::to_string(count_++);
-    RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
-    publisher_->publish(message);
+                  device_infos.size());
+    */
   }
-  rclcpp::TimerBase::SharedPtr timer_;
-  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
-  size_t count_;
+  // rclcpp::TimerBase::SharedPtr timer_;
+  // rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
+  // size_t count_;
   Arena::ISystem* pSystem_;
+  Arena::IDevice* pDevice_;
 };
 
 int main(int argc, char* argv[])

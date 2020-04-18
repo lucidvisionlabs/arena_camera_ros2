@@ -5,6 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "rclcpp: arena_camera_node",
+            "type": "cppdbg", //linux
+            "MIMode": "gdb",
+            "request": "launch",
+            "program": "${workspaceRoot:ros2_ws}/install/arena_camera_node/lib/arena_camera_node/some_file",
+            "cwd": "${workspaceRoot:ros2_ws}",
+            "stopAtEntry": false,
+            "preLaunchTask": "ros_env_reload",
+            //"preLaunchTask": "colcon_build_debug"
+        },
+        {
             "name": "current_file",
             "type": "python",
             "request": "launch",
