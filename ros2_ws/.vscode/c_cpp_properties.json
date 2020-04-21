@@ -4,6 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
+                "/usr/include/c++/7",
                 "/opt/ros/eloquent/include",
                 "/home/abdul/ArenaSDK_Linux_x64/include/Arena",
                 "/home/abdul/ArenaSDK_Linux_x64/GenICam/library/CPP/include"
