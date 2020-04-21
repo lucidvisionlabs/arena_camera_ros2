@@ -1,11 +1,13 @@
-#include <chrono>
-//#include <functional>
-//#include <memory>
+#include <chrono>      //chrono_literals
+#include <functional>  // std::bind
+#include <stdexcept>   // std::runtime_err
 #include <string>
 
-#include "ArenaApi.h"
-#include "rclcpp/rclcpp.hpp"
-#include "rclcpp/timer.hpp"  // WallTimer
+#include <ArenaApi.h>
+#include <rclcpp/rclcpp.hpp>
+#include <rclcpp/timer.hpp>          // WallTimer
+#include <std_srvs/srv/trigger.hpp>  // Trigger
+
 //#include "std_msgs/msg/string.hpp"
 
 using namespace std::chrono_literals;
@@ -20,7 +22,7 @@ class SafeISystemPtr : public Arena::Isystem
   {
     if (!pSystem){}
 
-    pSystem_ =
+    m_pSystem =
         std::shared_ptr<Arena::ISystem>(nullptr, [](Arena::ISystem* pSystem) {
           if (pSystem) {  // this is an issue for multi devices
             Arena::CloseSystem(pSystem);
@@ -28,7 +30,7 @@ class SafeISystemPtr : public Arena::Isystem
         });
   }
   ~SafeISystemPtr() {}
-  std::shared_ptr<Arena::ISystem> pSystem_;
+  std::shared_ptr<Arena::ISystem> m_pSystem;
 };
 }  // namespace Arena
 */
@@ -45,20 +47,20 @@ class ArenaCameraNode : public rclcpp::Node
 
     // ARENASDK ---------------------------------------------------------------
     // Custom deleter for system
-    pSystem_ =
+    m_pSystem =
         std::shared_ptr<Arena::ISystem>(nullptr, [=](Arena::ISystem* pSystem) {
           if (pSystem) {  // this is an issue for multi devices
             Arena::CloseSystem(pSystem);
             RCLCPP_INFO(this->get_logger(), "System is destroyed");
           }
         });
-    pSystem_.reset(Arena::OpenSystem());
+    m_pSystem.reset(Arena::OpenSystem());
 
     // Custom deleter for device
-    pDevice_ =
+    m_pDevice =
         std::shared_ptr<Arena::IDevice>(nullptr, [=](Arena::IDevice* pDevice) {
-          if (pSystem_ && pDevice) {
-            pSystem_->DestroyDevice(pDevice);
+          if (m_pSystem && pDevice) {
+            pSystem->DestroyDevice(pDevice);
             RCLCPP_INFO(this->get_logger(), "Device is destroyed");
           }
         });
@@ -68,7 +70,7 @@ class ArenaCameraNode : public rclcpp::Node
     //
     this->declare_parameter("serial", "");
     this->declare_parameter("topic",
-                            std::string("/") + this->get_name() + "/images");
+                            std::string() + "/" + this->get_name() + "/images");
     this->declare_parameter("gain", -1);
     this->declare_parameter("width", -1);
     this->declare_parameter("height", -1);
@@ -82,12 +84,12 @@ class ArenaCameraNode : public rclcpp::Node
     //
     // update devices is a blocking call and we need to get to spin;
     // use Node::create_wall_timer() to get non blocking call
-    pSystem_->UpdateDevices(100);  // in millisec
-    auto device_infos = pSystem_->GetDevices();
+    m_pSystem->UpdateDevices(100);  // in millisec
+    auto device_infos = m_pSystem->GetDevices();
 
     // no device is connected
     // TODO :
-    // - have in seperate palce ?
+    // - have in separate place ?
     if (device_infos.size()) {
       // fn to check if the device has arrived
       auto discover_device_callback = [this]() {
@@ -99,8 +101,8 @@ class ArenaCameraNode : public rclcpp::Node
         }
 
         // camera discovery
-        pSystem_->UpdateDevices(100);  // in millisec
-        auto device_infos_ = pSystem_->GetDevices();
+        m_pSystem->UpdateDevices(100);  // in millisec
+        auto device_infos_ = m_pSystem->GetDevices();
 
         // no camera is connected
         if (device_infos_.size()) {
@@ -116,52 +118,106 @@ class ArenaCameraNode : public rclcpp::Node
           RCLCPP_INFO(this->get_logger(),
                       "%d arena device(s) has been discoved.",
                       device_infos_.size());
-          run()
+          run();
         }
       };
       discover_devices_timer_ =
           this->create_wall_timer(2s, discover_device_callback);
     }
+
     //
     // TRIGGER (service)
     //
-    auto serv = this->create_service<rclcpp::>("trigger_image");
-  };
-  ~ArenaCameraNode(){};
+    auto serv = this->create_service<std_srvs::srv::Trigger>(
+        "trigger_image",
+        // TODO : like to fn-trigger-image
+        [this](const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
+               std::shared_ptr<std_srvs::srv::Trigger::Response> response)
+            -> void {
+          RCLCPP_INFO(this->get_logger(),
+                      "The trigger request is being served");
+        });
+  }
+  ~ArenaCameraNode() {}
   void run()
   {
     RCLCPP_INFO(this->get_logger(), " run()");
 
     // device -------------------------------------------
-
-    /*
-    this->_create_device();
+    auto first_device = create_device_ros();
+    m_pDevice.reset(first_device);
 
     // nodes --------------------------------------------
-    this->_set_nodes();
+    set_nodes();
 
-    // services -----------------------------------------
-
-    this->_srv = this->create_service(Trigger, 'trigger_image',
-                                      this->_publish_images_at_trigger);
     // streaming ----------------------------------------
-    this->_device->start_stream();
+    m_pDevice->StartStream();
 
     // publish images -------------------------------
-    if (!(this->trigger_mode_active)) {
-      this->_publish_images();
-    }
-    */
+    // if (!(this->trigger_mode_active)) {
+    publish_images();
+    //}
     RCLCPP_INFO(this->get_logger(), " run() done ");
-  };
+  }
+
+  void publish_images() {}
+
+  // TODO cmdline serialfor device to create
+  Arena::IDevice* create_device_ros()
+  {
+    m_pSystem->UpdateDevices(100);  // in millisec
+    auto device_infos = m_pSystem->GetDevices();
+    if (device_infos.size()) {
+      return m_pSystem->CreateDevice(device_infos.at(0));
+    } else {
+      // TODO: handel disconnection
+      throw std::runtime_error(
+          "camera(s) were disconnected after they were discovered");
+    }
+  }
+  void set_nodes()
+  {
+    auto nodemap = m_pDevice->GetNodeMap();
+    // device run on default profile all the time if no args are passed
+    // otherwise, overwise only these params
+    Arena::SetNodeValue<GenICam::gcstring>(nodemap, "UserSetSelector",
+                                           "Default");
+    // execute the profile
+    Arena::ExecuteNode(nodemap, "UserSetLoad");
+
+    auto gain_value = this->get_parameter("gain").get_value();
+    if (gain_value != -1) {
+      Arena::SetNodeValue<double>(nodemap, "Gain", gain_value);
+    }
+
+    auto width_value = this->get_parameter("width").get_value();
+    if (width_value != -1) {
+      Arena::SetNodeValue<int64_t>(
+          nodemap, "Width", width_value);  // TODO is this should be uint64_t
+    }
+
+    auto height_value = this->get_parameter("height").get_value();
+    if (height_value != -1) {
+      Arena::SetNodeValue<int64_t>(
+          nodemap, "Height", height_value);  // TODO is this should be uint64_t
+    }
+
+    // TODO PIXEL FORMAT HANDLEING
+
+    // TODO HANDEL EXPOSURE AUTO and TIME
+
+    // HANDLE TRIGGER MODE
+  }
+
+  std::shared_ptr<Arena::ISystem> m_pSystem;
+  std::shared_ptr<Arena::IDevice> m_pDevice;
 
  private:
   void wait_until_a_device_is_discovered_() {}
   // rclcpp::TimerBase::SharedPtr timer_;
   // rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
   // size_t count_;
-  std::shared_ptr<Arena::ISystem> pSystem_;
-  std::shared_ptr<Arena::IDevice> pDevice_;
+
   rclcpp::TimerBase::SharedPtr discover_devices_timer_;
 };
 
