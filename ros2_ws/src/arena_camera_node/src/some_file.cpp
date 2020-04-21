@@ -1,16 +1,17 @@
 #include <chrono>      //chrono_literals
 #include <functional>  // std::bind
-#include <stdexcept>   // std::runtime_err
-#include <string>
-
-#include <ArenaApi.h>
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp/timer.hpp>          // WallTimer
 #include <std_srvs/srv/trigger.hpp>  // Trigger
+#include <stdexcept>                 // std::runtime_err
+#include <string>
+
+#include "ArenaApi.h"
 
 //#include "std_msgs/msg/string.hpp"
 
 using namespace std::chrono_literals;
+
 /*
 namespace Arena
 {
