@@ -32,7 +32,6 @@ if(EXISTS ${_ARENA_SDK_CONF})
 		${_ArenaSDK_ROOT}/lib64/libgentl.so
 		${_ArenaSDK_ROOT}/lib64/libarenad.so
 
-
 		## GenICam
 		${_ArenaSDK_ROOT}/GenICam/library/lib/Linux64_x64/libGCBase_gcc421_v3_0.so
 		${_ArenaSDK_ROOT}/GenICam/library/lib/Linux64_x64/libGenApi_gcc421_v3_0.so

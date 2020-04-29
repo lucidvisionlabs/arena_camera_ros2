@@ -29,7 +29,7 @@
 			"options": {
 				"cwd": "${workspaceRoot:ros2_ws}",
 			},
-			//"dependsOn": "remove_arti",
+			"dependsOn": "remove_arti",
 			"group": "build"
 		},
 		{

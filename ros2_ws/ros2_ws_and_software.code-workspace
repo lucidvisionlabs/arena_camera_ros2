@@ -37,9 +37,17 @@
       "editor.defaultFormatter": "xaver.clang-format",
     },
     "C_Cpp.clang_format_fallbackStyle": "none",
+    "C_Cpp.clang_format_sortIncludes": true,
+    "C_Cpp.workspaceSymbols": "All",
+    "C_Cpp.loggingLevel": "Debug",
+    "C_Cpp.intelliSenseEngineFallback": "Enabled",
+    "C_Cpp.intelliSenseCacheSize": 200000,
+    "C_Cpp.default.browse.path": [],
     //
     "debug.onTaskErrors": "abort",
     "cSpell.words": [
+      "GPIO",
+      "gcstring",
       "rclcpp",
       "rclpy",
       "srvs"

@@ -16,8 +16,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	# linked GenICam hearders give warnings No such file or directory
 	# GENICAM_USER_ACCEPTS_ANY_COMPILER flag need tro be defined 
 	# 
-	  add_compile_options(-Wall -Wextra -Wpedantic -Wunknown-pragmas)
-	  message(STATE ********************************************)
+	add_compile_options(-Wall -Wextra -Wpedantic -Wunknown-pragmas)
 endif()
 
 # -----------------------------------------------------------------------------
@@ -40,14 +39,11 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 # - even if a dependency is used in one package, it has to be found
 #find_package(ament_cmake REQUIRED) # ?? why needed
 #find_package(ament_cmake_python REQUIRED) # why needed ?
-find_package(arena_sdk REQUIRED)
+find_package(arena_sdk REQUIRED) # cmake ctyle no ament
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
-#find_package(ament_cmake REQUIRED)
-#find_package(ament_cmake_python REQUIRED)
-#find_package(rclpy REQUIRED)
-#find_package(sensor_msgs REQUIRED)
-#find_package(std_srvs REQUIRED)
+find_package(std_srvs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 
 #
 # EXPORT DEPS
@@ -64,8 +60,8 @@ find_package(std_msgs REQUIRED)
 #   building the package but when other packages use this package
 #ament_export_dependencies(ament_cmake)
 #ament_export_dependencies(ament_cmake_python)
-ament_export_dependencies(rclcpp)
-ament_export_dependencies(std_msgs)
+#ament_export_dependencies(rclcpp)
+#ament_export_dependencies(std_msgs)
 # Export package dependencies
 #ament_export_dependencies(ament_cmake)
 #ament_export_dependencies(ament_cmake_python)
@@ -97,7 +93,7 @@ ament_export_dependencies(std_msgs)
 #
 # EXPORT HEADERS should it before the "ament_export_dependencies" ?
 #
-ament_export_include_directories(include)
+#ament_export_include_directories(include)
 #ament_export_include_directories(include ${rclcpp_INCLUDE_DIRS})
 
 
@@ -108,56 +104,39 @@ ament_export_include_directories(include)
 # -----------------------------------------------------------------------------
 
 set(target_name some_file)
-#
-#
-# CPP
-#
-#
 
-# TARGET/EXCUTABLE : CPP -> EXECUTABLE
-add_executable(${target_name} src/some_file.cpp)
+# CPP -> EXECUTABLE
+add_executable(${target_name} src/main.cpp
+                              src/ArenaCameraNode.cpp)
 
-
-# TARGET/EXCUTABLE DEPS PKGS
-# a helper function that makes sure your executable or library has everything
-# it needs to use. so it adds target dependencies and sets them up.
-#
-# - Target:
-#     - first define it using add_excutable(traget)
-#     - if uses another package, that package should
-#       be listed as a dependency in the "ament_target_dependencies"
-# - Dependencies:
-#     - should be found first via "find_package(dep_package REQUIRED)"
-ament_target_dependencies(${target_name}  rclcpp std_msgs)
-
-#
-# ${target_name}  TARGET HEADERS
-#
-target_include_directories(${target_name}  
-	PRIVATE
-		${arena_sdk_INCLUDE_DIRS})
-
-#
-# ${target_name}  TARGET LIBS
-#
-target_link_libraries(${target_name} ${arena_sdk_LIBS} )
-
-# MV EXEC to lib dir
-install(TARGETS
-${target_name} 
-  DESTINATION lib/${PROJECT_NAME}
-)
-
-# TARGET/LIBRARY : CPP -> .a file
+# CPP -> .a file
 # creates :
 # - build/arena_camera_node/CMakeFiles/arena_camera_node.dir and sub dirs
 # - build/arena_camera_node/libarena_camera_node.a
 # add_library(${PROJECT_NAME} src/some_file.cpp)
-# target_link_libraries(${PROJECT_NAME} ${rclcpp_LIBRARIES})
 
 # EXPORT .a file for other pakges ?
 #ament_export_libraries(${PROJECT_NAME} ${rclcpp_LIBRARIES})
 
+# ROS DEP
+# - this way it will find our header libs automatically
+# - for ArenAsdk the cmake way is used no ament
+ament_target_dependencies(${target_name}  rclcpp 
+                                          std_msgs 
+                                          std_srvs
+                                          sensor_msgs )
+
+# HEADERS DEP
+target_include_directories(${target_name}  PRIVATE	${arena_sdk_INCLUDE_DIRS})
+
+# LIBS DEP
+target_link_libraries(${target_name} ${arena_sdk_LIBS})
+
+# MV EXEC to lib dir
+install(TARGETS
+  ${target_name} 
+    DESTINATION lib/${PROJECT_NAME}
+)
 
 # -----------------------------------------------------------------------------
 
