@@ -107,7 +107,8 @@ set(target_name some_file)
 
 # CPP -> EXECUTABLE
 add_executable(${target_name} src/main.cpp
-                              src/ArenaCameraNode.cpp)
+                              src/ArenaCameraNode.cpp
+                              src/LightArena.cpp)
 
 # CPP -> .a file
 # creates :

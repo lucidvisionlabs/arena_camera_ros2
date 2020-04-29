@@ -10,6 +10,11 @@
             "MIMode": "gdb",
             "request": "launch",
             "program": "${workspaceRoot:ros2_ws}/install/arena_camera_node/lib/arena_camera_node/some_file",
+            "args": [
+                "--ros-args",
+                "-p",
+                "serial:=\"904240001\"",
+            ],
             "cwd": "${workspaceRoot:ros2_ws}",
             "stopAtEntry": false,
             "preLaunchTask": "ros_env_reload",
