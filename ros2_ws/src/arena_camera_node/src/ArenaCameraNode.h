@@ -1,3 +1,5 @@
+#pragma once
+
 // std
 #include <chrono>      //chrono_literals
 #include <functional>  // std::bind , std::placeholders
@@ -45,15 +47,14 @@ class ArenaCameraNode : public rclcpp::Node
     // PARAMS -----------------------------------------------------------------
     //
     this->declare_parameter("serial", "");
+    this->declare_parameter("pixelformat", "");
     this->declare_parameter("topic",
                             std::string("/") + this->get_name() + "/images");
-    this->declare_parameter("gain", -1.0);
     this->declare_parameter("width", -1);
     this->declare_parameter("height", -1);
-    this->declare_parameter("pixelformat", "");
-    this->declare_parameter("exposure_auto", true);
+    this->declare_parameter("gain", -1.0);
     this->declare_parameter("exposure_time", -1.0);
-    this->declare_parameter("trigger_mode", false);
+    trigger_mode_activated_ = this->declare_parameter("trigger_mode", false);
 
     //
     // CHECK DEVICE CONNECTION ( timer ) --------------------------------------
@@ -80,8 +81,7 @@ class ArenaCameraNode : public rclcpp::Node
     m_pub_ = this->create_publisher<sensor_msgs::msg::Image>(
         this->get_parameter("topic").as_string(), qos);
 
-    RCLCPP_INFO(this->get_logger(),
-                std::string("Created \"") + this->get_name() + "\" node");
+    log_info(std::string("Created \"") + this->get_name() + "\" node");
   }
   ~ArenaCameraNode() {}
 
@@ -89,6 +89,7 @@ class ArenaCameraNode : public rclcpp::Node
   std::shared_ptr<Arena::IDevice> m_pDevice;
 
  private:
+  bool trigger_mode_activated_;
   void wait_for_device_timer_callback_();
   void run_();
   // TODO :
@@ -96,7 +97,14 @@ class ArenaCameraNode : public rclcpp::Node
   // - handle misconfigured device
   Arena::IDevice* create_device_ros_();
   void set_nodes_();
+  void set_nodes_load_default_profile();
+  void set_nodes_roi();
+  void set_nodes_gain();
+  void set_nodes_pixelformat();
+  void set_nodes_exposure();
+  void set_nodes_trigger_mode();
   void publish_images_();
+
   void publish_an_image_on_trigger_(
       const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
       std::shared_ptr<std_srvs::srv::Trigger::Response> response);
@@ -105,4 +113,11 @@ class ArenaCameraNode : public rclcpp::Node
   rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr m_pub_;
   rclcpp::TimerBase::SharedPtr m_wait_for_device_timer_callback_;
   std::shared_ptr<rclcpp::Service<std_srvs::srv::Trigger>> m_srv_;
+
+  void log_info(std::string msg) { RCLCPP_INFO(this->get_logger(), msg); };
+  // void log_info(GenICam::gcstring msg) { RCLCPP_INFO(this->get_logger(),
+  // msg.c_str()); };
+  void log_warn(std::string msg) { RCLCPP_WARN(this->get_logger(), msg); };
+  // void log_warn(GenICam::gcstring msg) { RCLCPP_WARN(this->get_logger(),
+  // msg.c_str()); };
 };

@@ -46,7 +46,11 @@
     //
     "debug.onTaskErrors": "abort",
     "cSpell.words": [
+      "BGGR",
       "GPIO",
+      "GRBG",
+      "Pfnc",
+      "RGGB",
       "gcstring",
       "rclcpp",
       "rclpy",

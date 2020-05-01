@@ -16,7 +16,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	# linked GenICam hearders give warnings No such file or directory
 	# GENICAM_USER_ACCEPTS_ANY_COMPILER flag need tro be defined 
 	# 
-	add_compile_options(-Wall -Wextra -Wpedantic -Wunknown-pragmas)
+	#add_compile_options(-Wall -Wextra -Wpedantic -Wunknown-pragmas)
 endif()
 
 # -----------------------------------------------------------------------------
@@ -108,7 +108,8 @@ set(target_name some_file)
 # CPP -> EXECUTABLE
 add_executable(${target_name} src/main.cpp
                               src/ArenaCameraNode.cpp
-                              src/LightArena.cpp)
+                              src/light_arena/deviceinfo_helper.cpp
+                              src/rclcpp_arena_adapter/pixelformat_translation.cpp)
 
 # CPP -> .a file
 # creates :
