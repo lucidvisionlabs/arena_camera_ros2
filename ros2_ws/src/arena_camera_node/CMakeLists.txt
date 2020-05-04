@@ -141,6 +141,39 @@ install(TARGETS
 )
 
 # -----------------------------------------------------------------------------
+#
+# ROS2 RUN TRIGGER_IMAGE <>
+#
+# -----------------------------------------------------------------------------
+
+set(trigger_image trigger_image)
+
+# CPP -> EXECUTABLE
+add_executable(${trigger_image} src/trigger_image_client.cpp)
+
+# CPP -> .a file
+
+# EXPORT .a file for other pakges ?
+#ament_export_libraries(${PROJECT_NAME} ${rclcpp_LIBRARIES})
+
+# ROS DEP
+# - this way it will find our header libs automatically
+# - for ArenAsdk the cmake way is used no ament
+ament_target_dependencies(${trigger_image}  rclcpp 
+                                          std_srvs)
+
+# HEADERS DEP
+#target_include_directories(${trigger_image}  PRIVATE	${arena_sdk_INCLUDE_DIRS})
+
+# LIBS DEP
+#target_link_libraries(${trigger_image} ${arena_sdk_LIBS})
+
+# MV EXEC to lib dir
+install(TARGETS
+  ${trigger_image} 
+    DESTINATION lib/${PROJECT_NAME}
+)
+# -----------------------------------------------------------------------------
 
 #
 #

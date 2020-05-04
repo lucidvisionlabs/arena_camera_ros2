@@ -112,7 +112,10 @@ void ArenaCameraNode::publish_an_image_on_trigger_(
     std::shared_ptr<std_srvs::srv::Trigger::Response> response)
 {
   log_info("The trigger request is being served");
+  response->success = false;
+  response->message = "HI";
 
+  auto x = 9;
   /*
   Arena::IImage* image = nullptr;
   try {

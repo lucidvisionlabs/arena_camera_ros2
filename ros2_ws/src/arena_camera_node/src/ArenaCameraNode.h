@@ -112,12 +112,8 @@ class ArenaCameraNode : public rclcpp::Node
 
   rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr m_pub_;
   rclcpp::TimerBase::SharedPtr m_wait_for_device_timer_callback_;
-  std::shared_ptr<rclcpp::Service<std_srvs::srv::Trigger>> m_srv_;
+  rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr m_srv_;
 
   void log_info(std::string msg) { RCLCPP_INFO(this->get_logger(), msg); };
-  // void log_info(GenICam::gcstring msg) { RCLCPP_INFO(this->get_logger(),
-  // msg.c_str()); };
   void log_warn(std::string msg) { RCLCPP_WARN(this->get_logger(), msg); };
-  // void log_warn(GenICam::gcstring msg) { RCLCPP_WARN(this->get_logger(),
-  // msg.c_str()); };
 };

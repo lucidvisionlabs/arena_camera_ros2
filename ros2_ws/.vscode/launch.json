@@ -42,6 +42,25 @@
             }
         },
         {
+            "name": "trigger_image_clinet",
+            "type": "cppdbg", //linux
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "text": "-enable-pretty-printing" // for std::string to show value
+                }
+            ],
+            "request": "launch",
+            "program": "${workspaceRoot:ros2_ws}/install/arena_camera_node/lib/arena_camera_node/trigger_image",
+            "cwd": "${workspaceRoot:ros2_ws}",
+            "stopAtEntry": false,
+            //"preLaunchTask": "ros_env_reload",
+            //"preLaunchTask": "colcon_build_debug",
+            "sourceFileMap": {
+                "/home/ubuntu/Jenkins/workspace/ArenaSDK_Master_Lin/": "${workspaceFolder:software}"
+            }
+        },
+        {
             "name": "current_file",
             "type": "python",
             "request": "launch",
