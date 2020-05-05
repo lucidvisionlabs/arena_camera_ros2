@@ -4,7 +4,10 @@
 # - CMake is why we did not put it in arena_camera_node
 cd src ; ros2 pkg create --build-type ament_cmake <name>
 
-__log_level:=debug
+--ros-args --log-level DEBUG
+
+# trigger an image from the command line without the clinet
+ros2 service call /arena_camera_node/trigger_image 'std_srvs/srv/Trigger'
 
 
 _reload ; cd $_ROS2_WS ; _rm_diry_ros2_node ; source /home/abdul/arena_camera_ros2/ros2_ws/ve_dev/bin/activate ; colcon build --symlink-install

@@ -5,6 +5,62 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "rclcpp: arena_camera_node",
+            "type": "cppdbg", //linux
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "text": "-enable-pretty-printing" // for std::string to show value
+                }
+            ],
+            "request": "launch",
+            "program": "${workspaceRoot:ros2_ws}/install/arena_camera_node/lib/arena_camera_node/some_file",
+            "args": [
+                "--ros-args",
+                "-p",
+                "serial:=\"904240001\"",
+                "-p",
+                "topic:=/arena_camera_node/WE_ARE_IAMGES",
+                "-p",
+                "width:=100",
+                "-p",
+                "height:=100",
+                "-p",
+                "pixelformat:=rgb8",
+                //"pixelformat:=mono16",
+                "-p",
+                "exposure_time:=50.0",
+                "-p",
+                "trigger_mode:=true",
+            ],
+            "cwd": "${workspaceRoot:ros2_ws}",
+            "stopAtEntry": false,
+            "preLaunchTask": "ros_env_reload",
+            //"preLaunchTask": "colcon_build_debug",
+            "sourceFileMap": {
+                "/home/ubuntu/Jenkins/workspace/ArenaSDK_Master_Lin/": "${workspaceFolder:software}"
+            }
+        },
+        {
+            "name": "trigger_image_clinet",
+            "type": "cppdbg", //linux
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "text": "-enable-pretty-printing" // for std::string to show value
+                }
+            ],
+            "request": "launch",
+            "program": "${workspaceRoot:ros2_ws}/install/arena_camera_node/lib/arena_camera_node/trigger_image",
+            "cwd": "${workspaceRoot:ros2_ws}",
+            "stopAtEntry": false,
+            //"preLaunchTask": "ros_env_reload",
+            //"preLaunchTask": "colcon_build_debug",
+            "sourceFileMap": {
+                "/home/ubuntu/Jenkins/workspace/ArenaSDK_Master_Lin/": "${workspaceFolder:software}"
+            }
+        },
+        {
             "name": "current_file",
             "type": "python",
             "request": "launch",

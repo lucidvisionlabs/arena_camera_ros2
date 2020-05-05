@@ -1,0 +1,48 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "remove_arti",
+			"command": "rm",
+			"args": [
+				"-rf",
+				"build",
+				"install",
+				"log",
+			],
+			"options": {
+				"cwd": "${workspaceRoot:ros2_ws}"
+			},
+			"group": "build"
+		},
+		{
+			"type": "shell",
+			"label": "colcon_build_debug",
+			"command": "colcon",
+			"args": [
+				"build",
+				"--symlink-install",
+				"--cmake-args",
+				"-DCMAKE_BUILD_TYPE=Debug"
+			],
+			"options": {
+				"cwd": "${workspaceRoot:ros2_ws}",
+			},
+			"dependsOn": "remove_arti",
+			"group": "build"
+		},
+		{
+			"type": "shell",
+			"label": "ros_env_reload",
+			"command": "source install/local_setup.zsh",
+			"dependsOn": [
+				"colcon_build_debug"
+			],
+			"options": {
+				"cwd": "${workspaceRoot:ros2_ws}",
+			},
+			"group": "build"
+		}
+	]
+}

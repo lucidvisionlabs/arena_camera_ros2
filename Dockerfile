@@ -4,7 +4,9 @@
 # linux/amd64 only for now
 #https://hub.docker.com/layers/osrf/ros/eloquent-desktop/images/sha256-742948bc521573ff962f5a7f084ba1562a319e547c3938603f8dff5d33d3466e?context=explore
 FROM osrf/ros:eloquent-desktop
-
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && rm -rf /var/lib/apt/lists/*
 
 # ARGS might want to change ---------------------------------------------------
 
@@ -46,13 +48,17 @@ ADD ${arena_api_root_on_host}/*.whl ${arena_api_parent}/
 # install via pip3 all whl files in the arena_api parent dir
 RUN for whl_package in `ls ${arena_api_parent}/*.whl`; do pip3 install $whl_package; done
 
-# workspace -------------------------------------------------------------------
+# setup workspace -------------------------------------------------------------
 
-# "/arena_camera_ros2/ros2_ws" is mounted in the docker compose so changes presist in the host as well
+# setup entrypoint
+# entry point script:
+#  - installs package's depens
+#  - builds workspace and install it symlink way 
+#  - source workspace
+ADD ./arena_camera_ros_entrypoint.sh /
+#RUN chmod 777 /arena_camera_ros_entrypoint.sh
 
-# build workspace
+ENTRYPOINT [ "/arena_camera_ros_entrypoint.sh" ]
+#CMD ["bash"]
+
 WORKDIR /arena_camera_ros2/ros2_ws
-RUN colcon build --symlink-install
-
-# source the workspace
-CMD . /arena_camera_ros2/ros2_ws/install/local_setup.sh ; bash

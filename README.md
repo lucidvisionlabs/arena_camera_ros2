@@ -29,19 +29,23 @@ Arena Camera deriver for ROS2
 - install ArenaSDK and arena_api
   - contact support@thinklucid.com
 
-- build workspace
-    
-    `cd arena_camera_ros2\ros2_ws && colcon build --symlink-install # build workspace`
+- build workspace and its dependencies
+
+    `cd arena_camera_ros2\ros2_ws`
+
+    `rosdep install --from-paths src --ignore-src -r -y`
+
+    `colcon build --symlink-install # build workspace for dev`
 
 # Explore
 - explore nodes
     - arena_camera_node
       - This is the main node for each device created. It represent a Lucid Camera.
-      - it has two excutables `start` and `trigger_image`
+      - it has two executable `start` and `trigger_image`
       - ros arguments
         - serial 
           - a string representing the serial of the device to create.
-          - if not provided the node will represent the first camera it discovers.
+          - if not provided the node, it will represent the first dicovered camera.
         - topic
           - the topic the camera publish images on.
           - default value is /arena_camera_node/images.
@@ -58,21 +62,19 @@ Arena Camera deriver for ROS2
                                        "mono8", "mono16", "bayer_rggb8", "bayer_bggr8", "bayer_gbrg8",
                                        "bayer_grbg8", "bayer_rggb16", "bayer_bggr16", "bayer_gbrg16", "bayer_grbg16", 
                                        "yuv422"
-        - exposure_auto
-          - enable the device to automatically adjust exposure.
-          - values are true or false. true by default.
-          - when true `exposure_time` argument will be ignored inf passed along with it.
-          - when false `exposure_time` argument must be provided. 
+        - gain
+          - a double value represents the gain of the image.
+
         - exposure_time
           - the time elapsed before the camera sensor creates the image.
-          - units is micro seconds
-          - when combined with `exposure_auto:=true`, it will be ignored.
-          - mandatory if `exposure_auto:=false`.
-          - big values might makes the image take too long before it is view/published
+          - units is micro seconds.
+          - big values might makes the image take too long before it is view/published.
+          - if trigger_mode is passed to node them it is recommended to set exposure_time as well so the
+            triggered images do not take longer than expected.
 
         - trigger_mode
-          - puts the device in ready state where it will wait for a client to request an image.
-          - default value is false. which means the device will be publishing images to the
+          - puts the device in ready state where it will wait for a `trigger_image` client to request an image.
+          - default value is false. It means the device will be publishing images to the
             default topic `/arena_camera_node/images`.
           - values are true and false.
           - when false, images can be viewed 
@@ -82,12 +84,12 @@ Arena Camera deriver for ROS2
           
           - when true, image would not be published unless requested/triggered
   
-            `ros2 run arena_camera_node start --ros-args -p trigger_mode:=true`
+            `ros2 run arena_camera_node start --ros-args -p exposure_time:=<proper value> -p trigger_mode:=true`
             `ros2 run image_tools showimage -t /arena_camera_node/images # no image will be displayed yet`
             `ros2 run arena_camera_node trigger_image`
        - examples for using all arguments
             
-            `ros2 run arena_camera_node start --ros-args -p serial:=904240001 -p topic:=/special_images -p width:=100 -p height:=200 -p pixelformat:=rgb8 -p exposure_auto:=false -p exposure_time:=150 -p trigger_mode:=true` 
+            `ros2 run arena_camera_node start --ros-args -p serial:="904240001" -p topic:=/special_images -p width:=100 -p height:=200 -p pixelformat:=rgb8 -p gain:=10 -p exposure_time:=150 -p trigger_mode:=true` 
 
     explore excutables
 
@@ -106,7 +108,7 @@ Arena Camera deriver for ROS2
   
         - To run a device in trigger mode
     
-            `ros2 run arena_camera_node start--ros-args -p trigger_mode=true`.
+            `ros2 run arena_camera_node start--ros-args -p exposure_time:=<proper value> -p trigger_mode=true`.
         
         - To trigger an image run 
             
