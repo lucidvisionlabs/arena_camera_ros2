@@ -20,7 +20,7 @@ class ArenaCameraNode : public rclcpp::Node
  public:
   ArenaCameraNode() : Node("arena_camera_node")
   {
-    RCLCPP_INFO(this->get_logger(),
+    log_info(
                 std::string("Creating \"") + this->get_name() + "\" node");
 
     // ARENASDK ---------------------------------------------------------------
@@ -29,7 +29,7 @@ class ArenaCameraNode : public rclcpp::Node
         std::shared_ptr<Arena::ISystem>(nullptr, [=](Arena::ISystem* pSystem) {
           if (pSystem) {  // this is an issue for multi devices
             Arena::CloseSystem(pSystem);
-            RCLCPP_INFO(this->get_logger(), "System is destroyed");
+            log_info( "System is destroyed");
           }
         });
     m_pSystem.reset(Arena::OpenSystem());
@@ -39,22 +39,35 @@ class ArenaCameraNode : public rclcpp::Node
         std::shared_ptr<Arena::IDevice>(nullptr, [=](Arena::IDevice* pDevice) {
           if (m_pSystem && pDevice) {
             m_pSystem->DestroyDevice(pDevice);
-            RCLCPP_INFO(this->get_logger(), "Device is destroyed");
+            log_info( "Device is destroyed");
           }
         });
 
     //
     // PARAMS -----------------------------------------------------------------
     //
-    this->declare_parameter("serial", "");
-    this->declare_parameter("pixelformat", "");
-    this->declare_parameter("topic",
-                            std::string("/") + this->get_name() + "/images");
-    this->declare_parameter("width", -1);
-    this->declare_parameter("height", -1);
-    this->declare_parameter("gain", -1.0);
-    this->declare_parameter("exposure_time", -1.0);
+    serial_ = this->declare_parameter("serial", "");
+    is_passed_serial_ = serial_ != "";
+
+    pixelformat_ros_ = this->declare_parameter("pixelformat", "");
+    is_passed_pixelformat_ros_ = pixelformat_ros_ != "";
+
+    width_ = this->declare_parameter("width", -1);
+    is_passed_wdith = width_ >= 0;
+
+    height_ = this->declare_parameter("height", -1);
+    is_passed_height = height_ >= 0;
+
+    gain_ = this->declare_parameter("gain", -1.0);
+    is_passed_gain_ = gain_ >= 0;
+
+    exposure_time_ = this->declare_parameter("exposure_time", -1.0);
+    is_passed_exposure_time_ = exposure_time_ >= 0;
+
     trigger_mode_activated_ = this->declare_parameter("trigger_mode", false);
+
+    topic_ = this->declare_parameter(
+        "topic", std::string("/") + this->get_name() + "/images");
 
     //
     // CHECK DEVICE CONNECTION ( timer ) --------------------------------------
@@ -82,18 +95,50 @@ class ArenaCameraNode : public rclcpp::Node
         this->get_parameter("topic").as_string(), qos);
 
     log_info(std::string("Created \"") + this->get_name() + "\" node");
+    m_max = 0;
   }
   ~ArenaCameraNode() {}
 
   std::shared_ptr<Arena::ISystem> m_pSystem;
   std::shared_ptr<Arena::IDevice> m_pDevice;
 
+  void log_debug(std::string msg) { RCLCPP_DEBUG(this->get_logger(), msg); };
+  void log_info(std::string msg) { RCLCPP_INFO(this->get_logger(), msg); };
+  void log_warn(std::string msg) { RCLCPP_WARN(this->get_logger(), msg); };
+  void log_err(std::string msg) { RCLCPP_ERROR(this->get_logger(), msg); };
+
  private:
+  rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr m_pub_;
+  rclcpp::TimerBase::SharedPtr m_wait_for_device_timer_callback_;
+  rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr m_srv_;
+
+  std::string serial_;
+  bool is_passed_serial_;
+
+  std::string topic_;
+
+  size_t width_;
+  bool is_passed_wdith;
+
+  size_t height_;
+  bool is_passed_height;
+
+  double gain_;
+  bool is_passed_gain_;
+
+  double exposure_time_;
+  bool is_passed_exposure_time_;
+
+  std::string pixelformat_pfnc_;
+  std::string pixelformat_ros_;
+  bool is_passed_pixelformat_ros_;
+
   bool trigger_mode_activated_;
+
+  int m_max;
   void wait_for_device_timer_callback_();
   void run_();
   // TODO :
-  // - cmdline serial for device to create
   // - handle misconfigured device
   Arena::IDevice* create_device_ros_();
   void set_nodes_();
@@ -109,11 +154,4 @@ class ArenaCameraNode : public rclcpp::Node
       const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
       std::shared_ptr<std_srvs::srv::Trigger::Response> response);
   sensor_msgs::msg::Image msg_form_image_(Arena::IImage* pImage);
-
-  rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr m_pub_;
-  rclcpp::TimerBase::SharedPtr m_wait_for_device_timer_callback_;
-  rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr m_srv_;
-
-  void log_info(std::string msg) { RCLCPP_INFO(this->get_logger(), msg); };
-  void log_warn(std::string msg) { RCLCPP_WARN(this->get_logger(), msg); };
 };

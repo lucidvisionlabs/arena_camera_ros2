@@ -10,26 +10,6 @@
 
 using namespace std::chrono_literals;
 
-// from
-// https://github.com/ros2/demos/blob/eloquent/lifecycle/src/lifecycle_service_client.cpp#L81
-template <typename FutureT, typename WaitTimeT>
-std::future_status wait_for_result(FutureT& future, WaitTimeT time_to_wait)
-{
-  auto end = std::chrono::steady_clock::now() + time_to_wait;
-  std::chrono::milliseconds wait_period(100);
-  std::future_status status = std::future_status::timeout;
-  do {
-    auto now = std::chrono::steady_clock::now();
-    auto time_left = end - now;
-    if (time_left <= std::chrono::seconds(0)) {
-      break;
-    }
-    status =
-        future.wait_for((time_left < wait_period) ? time_left : wait_period);
-  } while (rclcpp::ok() && status != std::future_status::ready);
-  return status;
-}
-
 class TriggerArenaImageClientNode : public rclcpp::Node
 {
  public:
@@ -37,17 +17,19 @@ class TriggerArenaImageClientNode : public rclcpp::Node
       const std::string& node_name = "trigger_arena_image_client")
       : Node(node_name)
   {
+    // TODO
+    // - more generic name to all the trigger to work for many devices
     std::string srvs_name = "/arena_camera_node/trigger_image";
-    m_cli_ = this->create_client<std_srvs::srv::Trigger>(srvs_name);
-    log_warn_("CLIENT CREATED");
 
+    m_cli_ = this->create_client<std_srvs::srv::Trigger>(srvs_name);
+
+    // wait if the service is not available
     while (!m_cli_->wait_for_service(1s) && rclcpp::ok()) {
       if (!rclcpp::ok()) {
-        RCLCPP_ERROR(this->get_logger(),
-                     "Interrupted while waiting for the service. Exiting.");
+        log_err("Interrupted while waiting for the service. Exiting.");
         rclcpp::shutdown();
       } else {
-        log_info_(srvs_name + " service not available, waiting again... ->");
+        log_info(srvs_name + " service not available, waiting again... ->");
       }
     };
     // log_debug_('service is available now')
@@ -56,21 +38,29 @@ class TriggerArenaImageClientNode : public rclcpp::Node
   void send_request()
   {
     auto req_ = std::make_shared<std_srvs::srv::Trigger::Request>();
-    m_future = m_cli_->async_send_request(req_);
+    m_result = m_cli_->async_send_request(req_);
   }
 
-  // float m_future;
-  std::shared_future<std::shared_ptr<std_srvs::srv::Trigger_Response>> m_future;
+  std::shared_future<std::shared_ptr<std_srvs::srv::Trigger_Response>> m_result;
+  void log_info(const std::string& msg)
+  {
+    RCLCPP_INFO(this->get_logger(), msg);
+  };
+  void log_err(const std::string& msg)
+  {
+    RCLCPP_ERROR(this->get_logger(), msg);
+  };
 
  private:
   rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr m_cli_;
-
-  void log_info_(std::string msg) { RCLCPP_INFO(this->get_logger(), msg); };
-  void log_warn_(std::string msg) { RCLCPP_WARN(this->get_logger(), msg); };
 };
 
 int main(int argc, char** argv)
 {
+  // TODO
+  // - should take number of images to trigger
+  // - add debug logs
+
   // force flush of the stdout buffer.
   // this ensures a correct sync of all prints
   // even when executed simultaneously within the launch file.
@@ -82,17 +72,20 @@ int main(int argc, char** argv)
       "trigger_arena_image_client");
   client_node->send_request();
   // Wait for the result.
-  if (rclcpp::spin_until_future_complete(client_node, client_node->m_future) ==
+  if (rclcpp::spin_until_future_complete(client_node, client_node->m_result) ==
       rclcpp::executor::FutureReturnCode::SUCCESS) {
-    auto suc = client_node->m_future.get()->success;
-    auto msg = client_node->m_future.get()->message;
-    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), msg);
-    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), msg);
+    auto response = client_node->m_result.get();
+    if (response->success) {
+      client_node->log_info(std::string("SUCCESS : ") + response->message);
+    } else {
+      client_node->log_err(std::string("FAILURE : ") + response->message);
+    }
   } else {
-    RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Failed");
+    RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),
+                 "Failed to trigger image; issue with spin");
   }
 
-  // rclcpp::shutdown();
+  rclcpp::shutdown();
 
   return 0;
 }

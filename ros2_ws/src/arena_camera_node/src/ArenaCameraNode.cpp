@@ -9,12 +9,9 @@
 
 void ArenaCameraNode::wait_for_device_timer_callback_()
 {
-  RCLCPP_WARN(this->get_logger(), "wall timer callback is triggered");
-
   // something happend while checking for cameras
   if (!rclcpp::ok()) {
-    RCLCPP_ERROR(this->get_logger(),
-                 "Interrupted while waiting for arena camera. Exiting.");
+    log_err("Interrupted while waiting for arena camera. Exiting.");
     rclcpp::shutdown();
   }
 
@@ -24,38 +21,28 @@ void ArenaCameraNode::wait_for_device_timer_callback_()
 
   // no camera is connected
   if (!device_infos.size()) {
-    RCLCPP_INFO(this->get_logger(),
-                "No arena camera is connected. Waiting for device(s)...");
+    log_info("No arena camera is connected. Waiting for device(s)...");
   }
   // at least on is found
   else {
     m_wait_for_device_timer_callback_->cancel();
-    RCLCPP_INFO(this->get_logger(), "%d arena device(s) has been discoved.",
-                device_infos.size());
+    log_info(std::to_string(device_infos.size()) +
+             " arena device(s) has been discoved.");
     run_();
   }
 }
 
 void ArenaCameraNode::run_()
 {
-  RCLCPP_INFO(this->get_logger(), " run()");
-
-  // device -------------------------------------------
   auto device = create_device_ros_();
   m_pDevice.reset(device);
-
-  // nodes --------------------------------------------
   set_nodes_();
-
-  // streaming ----------------------------------------
   m_pDevice->StartStream();
-
-  // publish images -------------------------------
   if (!trigger_mode_activated_) {
     publish_images_();
+  } else {
+    // else ros::sping will
   }
-
-  RCLCPP_INFO(this->get_logger(), " run() done ");
 }
 void ArenaCameraNode::publish_images_()
 {
@@ -65,18 +52,15 @@ void ArenaCameraNode::publish_images_()
       image = m_pDevice->GetImage(100);
       auto image_msg = msg_form_image_(image);
       m_pub_->publish(image_msg);
-      RCLCPP_INFO(this->get_logger(),
-                  std::string("image ") + std::to_string(image->GetFrameId()) +
-                      " published to " +
-                      this->get_parameter("topic").as_string());
+      log_info(std::string("image ") + std::to_string(image->GetFrameId()) +
+               " published to " + topic_);
       this->m_pDevice->RequeueBuffer(image);
     } catch (std::exception& e) {
       if (image) {
         this->m_pDevice->RequeueBuffer(image);
         image = nullptr;
-        RCLCPP_WARN(this->get_logger(),
-                    std::string("Exception occurred when grabbing an image\n") +
-                        e.what());
+        log_warn(std::string("Exception occurred when grabbing an image\n") +
+                 e.what());
       }
     }
   };
@@ -85,24 +69,36 @@ void ArenaCameraNode::publish_images_()
 sensor_msgs::msg::Image ArenaCameraNode::msg_form_image_(Arena::IImage* pImage)
 {
   try {
+    // TODO could be optimized by moving it out
+    auto pixel_length_in_bytes = pImage->GetBitsPerPixel() / 8;
+    auto width_length_in_bytes = pImage->GetWidth() * pixel_length_in_bytes;
+    auto image_data_length_in_bytes =
+        width_length_in_bytes * pImage->GetHeight();
+
     auto image_msg = sensor_msgs::msg::Image();
-    auto len =
-        pImage->GetWidth() * pImage->GetBitsPerPixel() * pImage->GetHeight();
+    // for debugging
+    image_msg.data = {1, 2, 3, 4};
 
-    image_msg.data.assign(pImage->GetData(), pImage->GetData() + len);
+    // image_msg.data.assign(pImage->GetData(), pImage->GetData() + len);
 
-    image_msg.height = pImage->GetHeight();
-    image_msg.width = pImage->GetWidth();
+    image_msg.width = width_;
+    image_msg.height = height_;
+    image_msg.step = width_length_in_bytes;
 
-    // image_msg.is_bigendian =
+    // TODO what to do if unknown
+    image_msg.is_bigendian = pImage->GetPixelEndianness() ==
+                             Arena::EPixelEndianness::PixelEndiannessBig;
+    image_msg.encoding = pixelformat_ros_;
+    image_msg.header.frame_id = std::to_string(pImage->GetFrameId());
 
-    // todo
-    // - translate pixel fromat to ros pixelformat string
-    // - time stamp
-    // - frame id
+    image_msg.header.stamp.sec =
+        static_cast<uint32_t>(pImage->GetTimestampNs() / 1000000000);
+    image_msg.header.stamp.nanosec =
+        static_cast<uint32_t>(pImage->GetTimestampNs() % 1000000000);
+
     return image_msg;
   } catch (...) {
-    RCLCPP_WARN(this->get_logger(), "Failed to create Image ROS MSG");
+    log_warn("Failed to create Image ROS MSG");
     return sensor_msgs::msg::Image();
   }
 }
@@ -111,31 +107,73 @@ void ArenaCameraNode::publish_an_image_on_trigger_(
     const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
     std::shared_ptr<std_srvs::srv::Trigger::Response> response)
 {
-  log_info("The trigger request is being served");
-  response->success = false;
-  response->message = "HI";
+  if (!trigger_mode_activated_) {
+    std::string msg =
+        "Failed to trigger image because the device is not in trigger mode";
+    log_warn(msg);
+    response->message = msg;
+    response->success = false;
+  }
 
-  auto x = 9;
-  /*
+  log_info("A client triggered an image request");
+
   Arena::IImage* image = nullptr;
   try {
-   image = m_pDevice->GetImage(100);
-   auto image_msg = msg_form_image_(image);
-   m_pub_->publish(image_msg);
-   RCLCPP_INFO(this->get_logger(),
-               std::string("image ") + std::to_string(image->GetFrameId()) +
-                   " published to " +
-                   this->get_parameter("topic").as_string());
-   this->m_pDevice->RequeueBuffer(image);
+    m_max++;
+    if (m_max % 2) {
+      Arena::SetNodeValue<int64_t>(m_pDevice->GetNodeMap(), "Width", -121);
+    }
+    // trigger
+    log_info("wait until trigger is armed");
+    bool triggerArmed = false;
+    do {
+      // inifnate loop when i step in (sometimes)
+      triggerArmed =
+          Arena::GetNodeValue<bool>(m_pDevice->GetNodeMap(), "TriggerArmed");
+    } while (triggerArmed == false);
+
+    log_debug("trigger is armed; triggring an image");
+    Arena::ExecuteNode(m_pDevice->GetNodeMap(), "TriggerSoftware");
+
+    // get image
+    log_debug("getting an image");
+    image = m_pDevice->GetImage(100);
+
+    auto msg = std::string("image ") + std::to_string(image->GetFrameId()) +
+               " published to " + topic_;
+    auto image_msg = msg_form_image_(image);
+    m_pub_->publish(image_msg);
+    response->message = msg;
+    response->success = true;
+
+    log_info(msg);
+    this->m_pDevice->RequeueBuffer(image);
+
   } catch (std::exception& e) {
-   if (image) {
-     this->m_pDevice->RequeueBuffer(image);
-     image = nullptr;
-     RCLCPP_WARN(this->get_logger(),
-                 std::string("Exception occurred when grabbing an image\n") +
-                     e.what());
-   }
-  }*/
+    if (image) {
+      this->m_pDevice->RequeueBuffer(image);
+      image = nullptr;
+    }
+    auto msg =
+        std::string("Exception occurred while grabbing an image\n") + e.what();
+    log_warn(msg);
+    response->message = msg;
+    response->success = false;
+    // return;
+  }
+
+  catch (GenICam::GenericException& e) {
+    if (image) {
+      this->m_pDevice->RequeueBuffer(image);
+      image = nullptr;
+    }
+    auto msg =
+        std::string("Exception occurred whhile grabbing an image\n") + e.what();
+    log_warn(msg);
+    response->message = msg;
+    response->success = false;
+    // return;
+  }
 }
 
 Arena::IDevice* ArenaCameraNode::create_device_ros_()
@@ -149,16 +187,13 @@ Arena::IDevice* ArenaCameraNode::create_device_ros_()
   }
 
   auto index = 0;
-  // given a serial
-  if (!this->get_parameter("serial").as_string().empty()) {
-    index = DeviceInfoHelper::get_index_of_serial(
-        device_infos, this->get_parameter("serial").as_string());
+  if (is_passed_serial_) {
+    index = DeviceInfoHelper::get_index_of_serial(device_infos, serial_);
   }
 
   auto pDevice = m_pSystem->CreateDevice(device_infos.at(index));
-  RCLCPP_INFO(this->get_logger(),
-              std::string("device created ") +
-                  DeviceInfoHelper::info(device_infos.at(index)));
+  log_info(std::string("device created ") +
+           DeviceInfoHelper::info(device_infos.at(index)));
   return pDevice;
 }
 
@@ -188,30 +223,39 @@ void ArenaCameraNode::set_nodes_roi()
   // for the max to be published
   auto n = 369;
   auto nodemap = m_pDevice->GetNodeMap();
-  auto width_value = this->get_parameter("width").get_value<int64_t>();
-  if (width_value > 0) {
-    Arena::SetNodeValue<int64_t>(
-        nodemap, "Width", width_value);  // TODO is this should be uint64_t
+
+  // Width -------------------------------------------------
+  if (is_passed_wdith) {
+    Arena::SetNodeValue<int64_t>(nodemap, "Width", width_);
+  } else {
+    width_ = Arena::GetNodeValue<int64_t>(nodemap, "Width");
   }
+
+  // TODO
+  // bug when width is set to max
   auto new_w =
       GenApi::CIntegerPtr(m_pDevice->GetNodeMap()->GetNode("Width"))->GetMax() -
       (n * GenApi::CIntegerPtr(m_pDevice->GetNodeMap()->GetNode("Width"))
                ->GetInc());
-
   Arena::SetNodeValue<int64_t>(nodemap, "Width", new_w);
+  width_ = new_w;
 
-  auto height_value = this->get_parameter("height").get_value<int64_t>();
-  if (height_value > 0) {
-    Arena::SetNodeValue<int64_t>(
-        nodemap, "Height", height_value);  // TODO is this should be uint64_t
+  // Height ------------------------------------------------
+  if (is_passed_height) {
+    Arena::SetNodeValue<int64_t>(nodemap, "Height", height_);
+  } else {
+    height_ = Arena::GetNodeValue<int64_t>(nodemap, "Height");
   }
+
+  // TODO
+  // bug when width is set to max
   auto new_h =
       GenApi::CIntegerPtr(m_pDevice->GetNodeMap()->GetNode("Height"))
           ->GetMax() -
       (n * GenApi::CIntegerPtr(m_pDevice->GetNodeMap()->GetNode("Height"))
                ->GetInc());
-
   Arena::SetNodeValue<int64_t>(nodemap, "Height", new_h);
+  height_ = new_h;
 
   // TODO only if it was passed by ros arg
   log_info(std::string("\tROI set to ") + std::to_string(new_w) + "X" +
@@ -221,10 +265,9 @@ void ArenaCameraNode::set_nodes_roi()
 void ArenaCameraNode::set_nodes_gain()
 {
   auto nodemap = m_pDevice->GetNodeMap();
-  auto gain_value = this->get_parameter("gain").get_value<double>();
-  if (gain_value >= 0) {  // not default
-    Arena::SetNodeValue<double>(nodemap, "Gain", gain_value);
-    log_info(std::string("\tGain set to ") + std::to_string(gain_value));
+  if (is_passed_gain_) {  // not default
+    Arena::SetNodeValue<double>(nodemap, "Gain", gain_);
+    log_info(std::string("\tGain set to ") + std::to_string(gain_));
   }
 }
 void ArenaCameraNode::set_nodes_pixelformat()
@@ -233,10 +276,9 @@ void ArenaCameraNode::set_nodes_pixelformat()
   // TODO ---------------------------------------------------------------------
   // PIXEL FORMAT HANDLEING
 
-  auto pixelformat_value = this->get_parameter("pixelformat").as_string();
-  if (!pixelformat_value.empty()) {
-    auto pfnc = K_ROS2_PIXELFORMAT_TO_PFNC[pixelformat_value];
-    if (pfnc.empty()) {
+  if (is_passed_pixelformat_ros_) {
+    pixelformat_pfnc_ = K_ROS2_PIXELFORMAT_TO_PFNC[pixelformat_ros_];
+    if (pixelformat_pfnc_.empty()) {
       throw std::invalid_argument("pixelformat is not supported!");
     }
 
@@ -253,16 +295,25 @@ void ArenaCameraNode::set_nodes_pixelformat()
       x.append(e.what());
       throw std::invalid_argument(x);
     }
+  } else {
+    pixelformat_pfnc_ =
+        Arena::GetNodeValue<GenICam::gcstring>(nodemap, "PixelFormat");
+    pixelformat_ros_ = K_PFNC_TO_ROS2_PIXELFORMAT[pixelformat_pfnc_];
+
+    if (pixelformat_ros_.empty()) {
+      log_warn(
+          "the device current pixelfromat value is not supported by ROS2. "
+          "please use --ros-args -p pixelformat:=\"<supported pixelformat>\".");
+    }
   }
 }
 
 void ArenaCameraNode::set_nodes_exposure()
 {
   auto nodemap = m_pDevice->GetNodeMap();
-  auto exposure_time_value = this->get_parameter("exposure_time").as_double();
-  if (exposure_time_value >= 0) {
+  if (is_passed_exposure_time_) {
     Arena::SetNodeValue<GenICam::gcstring>(nodemap, "ExposureAuto", "Off");
-    Arena::SetNodeValue<double>(nodemap, "ExposureTime", exposure_time_value);
+    Arena::SetNodeValue<double>(nodemap, "ExposureTime", exposure_time_);
   }
 }
 
@@ -270,8 +321,13 @@ void ArenaCameraNode::set_nodes_trigger_mode()
 {
   auto nodemap = m_pDevice->GetNodeMap();
   auto tl_stream_nodemap = m_pDevice->GetTLStreamNodeMap();
-  trigger_mode_activated_ = this->get_parameter("trigger_mode").as_bool();
+
   if (trigger_mode_activated_) {
+    if (exposure_time_ < 0) {
+      log_warn(
+          "\tavoid long waits wating for triggerd images by providing proper "
+          "exposure_time.");
+    }
     // Enable trigger mode before setting the source and selector
     // and before starting the stream. Trigger mode cannot be turned
     // on and off while the device is streaming.
@@ -290,6 +346,6 @@ void ArenaCameraNode::set_nodes_trigger_mode()
                                            "StreamBufferHandlingMode");
     log_warn(
         "\ttrigger_mode is activated. No images will be published until images "
-        "are requested by trigger_image service");
+        "are requested by trigger_image client");
   }
 }
