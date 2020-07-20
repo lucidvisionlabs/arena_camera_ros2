@@ -1,9 +1,10 @@
 
 
+#include "ArenaCameraNode.h"
+
 #include <stdexcept>  // std::runtime_err
 #include <string>
 
-#include "ArenaCameraNode.h"
 #include "light_arena/deviceinfo_helper.h"
 #include "rclcpp_arena_adapter/pixelformat_translation.h"
 
@@ -44,6 +45,7 @@ void ArenaCameraNode::run_()
     // else ros::sping will
   }
 }
+
 void ArenaCameraNode::publish_images_()
 {
   Arena::IImage* image = nullptr;
@@ -217,28 +219,17 @@ void ArenaCameraNode::set_nodes_load_default_profile()
   Arena::ExecuteNode(nodemap, "UserSetLoad");
   log_info("\tdefault profile is loaded");
 }
+
 void ArenaCameraNode::set_nodes_roi()
 {
-  // max value needs 738 pixels in total to be subtracted from width and height
-  // for the max to be published
-  auto n = 369;
   auto nodemap = m_pDevice->GetNodeMap();
 
   // Width -------------------------------------------------
-  if (is_passed_wdith) {
+  if (is_passed_width) {
     Arena::SetNodeValue<int64_t>(nodemap, "Width", width_);
   } else {
     width_ = Arena::GetNodeValue<int64_t>(nodemap, "Width");
   }
-
-  // TODO
-  // bug when width is set to max
-  auto new_w =
-      GenApi::CIntegerPtr(m_pDevice->GetNodeMap()->GetNode("Width"))->GetMax() -
-      (n * GenApi::CIntegerPtr(m_pDevice->GetNodeMap()->GetNode("Width"))
-               ->GetInc());
-  Arena::SetNodeValue<int64_t>(nodemap, "Width", new_w);
-  width_ = new_w;
 
   // Height ------------------------------------------------
   if (is_passed_height) {
@@ -247,29 +238,20 @@ void ArenaCameraNode::set_nodes_roi()
     height_ = Arena::GetNodeValue<int64_t>(nodemap, "Height");
   }
 
-  // TODO
-  // bug when width is set to max
-  auto new_h =
-      GenApi::CIntegerPtr(m_pDevice->GetNodeMap()->GetNode("Height"))
-          ->GetMax() -
-      (n * GenApi::CIntegerPtr(m_pDevice->GetNodeMap()->GetNode("Height"))
-               ->GetInc());
-  Arena::SetNodeValue<int64_t>(nodemap, "Height", new_h);
-  height_ = new_h;
-
   // TODO only if it was passed by ros arg
-  log_info(std::string("\tROI set to ") + std::to_string(new_w) + "X" +
-           std::to_string(new_h));
+  log_info(std::string("\tROI set to ") + std::to_string(width_) + "X" +
+           std::to_string(height_));
 }
 
 void ArenaCameraNode::set_nodes_gain()
 {
-  auto nodemap = m_pDevice->GetNodeMap();
   if (is_passed_gain_) {  // not default
+    auto nodemap = m_pDevice->GetNodeMap();
     Arena::SetNodeValue<double>(nodemap, "Gain", gain_);
     log_info(std::string("\tGain set to ") + std::to_string(gain_));
   }
 }
+
 void ArenaCameraNode::set_nodes_pixelformat()
 {
   auto nodemap = m_pDevice->GetNodeMap();
@@ -304,14 +286,16 @@ void ArenaCameraNode::set_nodes_pixelformat()
       log_warn(
           "the device current pixelfromat value is not supported by ROS2. "
           "please use --ros-args -p pixelformat:=\"<supported pixelformat>\".");
+      // TODO
+      // print list of supported pixelformats
     }
   }
 }
 
 void ArenaCameraNode::set_nodes_exposure()
 {
-  auto nodemap = m_pDevice->GetNodeMap();
   if (is_passed_exposure_time_) {
+    auto nodemap = m_pDevice->GetNodeMap();
     Arena::SetNodeValue<GenICam::gcstring>(nodemap, "ExposureAuto", "Off");
     Arena::SetNodeValue<double>(nodemap, "ExposureTime", exposure_time_);
   }
@@ -319,10 +303,10 @@ void ArenaCameraNode::set_nodes_exposure()
 
 void ArenaCameraNode::set_nodes_trigger_mode()
 {
-  auto nodemap = m_pDevice->GetNodeMap();
-  auto tl_stream_nodemap = m_pDevice->GetTLStreamNodeMap();
-
   if (trigger_mode_activated_) {
+    auto nodemap = m_pDevice->GetNodeMap();
+    auto tl_stream_nodemap = m_pDevice->GetTLStreamNodeMap();
+
     if (exposure_time_ < 0) {
       log_warn(
           "\tavoid long waits wating for triggerd images by providing proper "

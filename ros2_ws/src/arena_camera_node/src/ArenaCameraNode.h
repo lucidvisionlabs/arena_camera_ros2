@@ -20,8 +20,7 @@ class ArenaCameraNode : public rclcpp::Node
  public:
   ArenaCameraNode() : Node("arena_camera_node")
   {
-    log_info(
-                std::string("Creating \"") + this->get_name() + "\" node");
+    log_info(std::string("Creating \"") + this->get_name() + "\" node");
 
     // ARENASDK ---------------------------------------------------------------
     // Custom deleter for system
@@ -29,7 +28,7 @@ class ArenaCameraNode : public rclcpp::Node
         std::shared_ptr<Arena::ISystem>(nullptr, [=](Arena::ISystem* pSystem) {
           if (pSystem) {  // this is an issue for multi devices
             Arena::CloseSystem(pSystem);
-            log_info( "System is destroyed");
+            log_info("System is destroyed");
           }
         });
     m_pSystem.reset(Arena::OpenSystem());
@@ -39,7 +38,7 @@ class ArenaCameraNode : public rclcpp::Node
         std::shared_ptr<Arena::IDevice>(nullptr, [=](Arena::IDevice* pDevice) {
           if (m_pSystem && pDevice) {
             m_pSystem->DestroyDevice(pDevice);
-            log_info( "Device is destroyed");
+            log_info("Device is destroyed");
           }
         });
 
@@ -52,11 +51,11 @@ class ArenaCameraNode : public rclcpp::Node
     pixelformat_ros_ = this->declare_parameter("pixelformat", "");
     is_passed_pixelformat_ros_ = pixelformat_ros_ != "";
 
-    width_ = this->declare_parameter("width", -1);
-    is_passed_wdith = width_ >= 0;
+    width_ = this->declare_parameter("width", 0);
+    is_passed_width = width_ > 0;
 
-    height_ = this->declare_parameter("height", -1);
-    is_passed_height = height_ >= 0;
+    height_ = this->declare_parameter("height", 0);
+    is_passed_height = height_ > 0;
 
     gain_ = this->declare_parameter("gain", -1.0);
     is_passed_gain_ = gain_ >= 0;
@@ -118,7 +117,7 @@ class ArenaCameraNode : public rclcpp::Node
   std::string topic_;
 
   size_t width_;
-  bool is_passed_wdith;
+  bool is_passed_width;
 
   size_t height_;
   bool is_passed_height;
