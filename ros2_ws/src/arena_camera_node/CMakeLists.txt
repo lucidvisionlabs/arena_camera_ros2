@@ -103,7 +103,7 @@ find_package(sensor_msgs REQUIRED)
 #
 # -----------------------------------------------------------------------------
 
-set(target_name some_file)
+set(target_name start)
 
 # CPP -> EXECUTABLE
 add_executable(${target_name} src/main.cpp
@@ -115,14 +115,14 @@ add_executable(${target_name} src/main.cpp
 # creates :
 # - build/arena_camera_node/CMakeFiles/arena_camera_node.dir and sub dirs
 # - build/arena_camera_node/libarena_camera_node.a
-# add_library(${PROJECT_NAME} src/some_file.cpp)
+# add_library(${PROJECT_NAME} src/main.cpp)
 
 # EXPORT .a file for other pakges ?
 #ament_export_libraries(${PROJECT_NAME} ${rclcpp_LIBRARIES})
 
 # ROS DEP
-# - this way it will find our header libs automatically
-# - for ArenAsdk the cmake way is used no ament
+# - this way, it will find our header libs automatically
+# - for Arenasdk the cmake way is used no ament
 ament_target_dependencies(${target_name}  rclcpp 
                                           std_msgs 
                                           std_srvs
