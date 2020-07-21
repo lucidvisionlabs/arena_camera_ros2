@@ -45,28 +45,42 @@ class ArenaCameraNode : public rclcpp::Node
     //
     // PARAMS -----------------------------------------------------------------
     //
-    serial_ = this->declare_parameter("serial", "");
-    is_passed_serial_ = serial_ != "";
+    std::string nextParameterToDeclare = "";
+    try {
+      nextParameterToDeclare = "serial";
+      serial_ = this->declare_parameter<std::string>("serial", "");
+      is_passed_serial_ = serial_ != "";
 
-    pixelformat_ros_ = this->declare_parameter("pixelformat", "");
-    is_passed_pixelformat_ros_ = pixelformat_ros_ != "";
+      nextParameterToDeclare = "pixelformat";
+      pixelformat_ros_ = this->declare_parameter("pixelformat", "");
+      is_passed_pixelformat_ros_ = pixelformat_ros_ != "";
 
-    width_ = this->declare_parameter("width", 0);
-    is_passed_width = width_ > 0;
+      nextParameterToDeclare = "width";
+      width_ = this->declare_parameter("width", 0);
+      is_passed_width = width_ > 0;
 
-    height_ = this->declare_parameter("height", 0);
-    is_passed_height = height_ > 0;
+      nextParameterToDeclare = "height";
+      height_ = this->declare_parameter("height", 0);
+      is_passed_height = height_ > 0;
 
-    gain_ = this->declare_parameter("gain", -1.0);
-    is_passed_gain_ = gain_ >= 0;
+      nextParameterToDeclare = "gain";
+      gain_ = this->declare_parameter("gain", -1.0);
+      is_passed_gain_ = gain_ >= 0;
 
-    exposure_time_ = this->declare_parameter("exposure_time", -1.0);
-    is_passed_exposure_time_ = exposure_time_ >= 0;
+      nextParameterToDeclare = "exposure_time";
+      exposure_time_ = this->declare_parameter("exposure_time", -1.0);
+      is_passed_exposure_time_ = exposure_time_ >= 0;
 
-    trigger_mode_activated_ = this->declare_parameter("trigger_mode", false);
+      nextParameterToDeclare = "trigger_mode";
+      trigger_mode_activated_ = this->declare_parameter("trigger_mode", false);
 
-    topic_ = this->declare_parameter(
-        "topic", std::string("/") + this->get_name() + "/images");
+      topic_ = this->declare_parameter(
+          "topic", std::string("/") + this->get_name() + "/images");
+
+    } catch (rclcpp::ParameterTypeException& e) {
+      log_err(nextParameterToDeclare + " argument");
+      throw;
+    }
 
     //
     // CHECK DEVICE CONNECTION ( timer ) --------------------------------------
@@ -94,7 +108,6 @@ class ArenaCameraNode : public rclcpp::Node
         this->get_parameter("topic").as_string(), qos);
 
     log_info(std::string("Created \"") + this->get_name() + "\" node");
-    m_max = 0;
   }
   ~ArenaCameraNode() {}
 
@@ -134,7 +147,6 @@ class ArenaCameraNode : public rclcpp::Node
 
   bool trigger_mode_activated_;
 
-  int m_max;
   void wait_for_device_timer_callback_();
   void run_();
   // TODO :

@@ -5,6 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
+            // `./install/arena_camera_node/lib/arena_camera_node/start --ros-args -p exposure_time:=50.0 -p trigger_mode:=true`
             "name": "rclcpp: arena_camera_node",
             "type": "cppdbg", //linux
             "MIMode": "gdb",
@@ -19,8 +20,9 @@
                 "--ros-args",
                 "-p",
                 "serial:=\"904240001\"",
+                //"serial:=904240001",
                 "-p",
-                "topic:=/arena_camera_node/WE_ARE_IAMGES",
+                "topic:=/arena_camera_node/WE_ARE_IMAGES",
                 "-p",
                 "width:=100",
                 "-p",
@@ -62,6 +64,7 @@
             }
         },
         {
+            // `./install/arena_camera_node/lib/arena_camera_node/trigger_image`
             "name": "trigger_image_clinet",
             "type": "cppdbg", //linux
             "MIMode": "gdb",
@@ -99,7 +102,7 @@
                 "-p",
                 "serial:=904240001",
                 "-p",
-                "topic:=/arena_camera_node/WE_ARE_IAMGES",
+                "topic:=/arena_camera_node/WE_ARE_IMAGES",
                 "-p",
                 "width:=100",
                 "-p",
@@ -129,5 +132,6 @@
     ]
 }
 /*
-ros2 run arena_camera_node run --ros-args -p serial:=904240001 -p topic:=newnewnew -p width:=100 -p height:=100 -p pixelformat:=rgb8 -p exposure_auto:=false -p exposure_time:=50 -p trigger_mode:=true
+ros2 run arena_camera_node start --ros-args -p serial:=\"904240001\" -p topic:=newnewnew -p width:=100 -p height:=100 -p pixelformat:=rgb8 -p exposure_auto:=false -p exposure_time:=50.0 -p trigger_mode:=true
+ros2 run arena_camera_node trigger_image
 */

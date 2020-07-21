@@ -121,17 +121,19 @@ void ArenaCameraNode::publish_an_image_on_trigger_(
 
   Arena::IImage* image = nullptr;
   try {
-    m_max++;
-    if (m_max % 2) {
-      Arena::SetNodeValue<int64_t>(m_pDevice->GetNodeMap(), "Width", -121);
-    }
     // trigger
-    log_info("wait until trigger is armed");
+
     bool triggerArmed = false;
+    auto waitForTriggerCount = 10;
     do {
-      // inifnate loop when i step in (sometimes)
+      // inifnate loop when I step in (sometimes)
       triggerArmed =
           Arena::GetNodeValue<bool>(m_pDevice->GetNodeMap(), "TriggerArmed");
+
+      if (triggerArmed == false && (waitForTriggerCount % 10) == 0) {
+        log_info("waiting for trigger to be armed");
+      }
+
     } while (triggerArmed == false);
 
     log_debug("trigger is armed; triggring an image");
@@ -265,10 +267,9 @@ void ArenaCameraNode::set_nodes_pixelformat()
     }
 
     try {
-      /// Arena::SetNodeValue<GenICam::gcstring>(nodemap, "PixelFormat",
-      //                                     pfnc.c_str());
-      // log_info(std::string("PixelFormat set to ") + pfnc);
-      log_warn(std::string("\tPixelFormat passed but not set"));
+      Arena::SetNodeValue<GenICam::gcstring>(nodemap, "PixelFormat",
+                                             pixelformat_pfnc_.c_str());
+      log_info(std::string("\tPixelFormat set to ") + pixelformat_pfnc_);
 
     } catch (GenICam::GenericException& e) {
       // TODO
@@ -328,8 +329,10 @@ void ArenaCameraNode::set_nodes_trigger_mode()
                                            "FrameStart");
     Arena::GetNodeValue<GenICam::gcstring>(tl_stream_nodemap,
                                            "StreamBufferHandlingMode");
-    log_warn(
-        "\ttrigger_mode is activated. No images will be published until images "
-        "are requested by trigger_image client");
+    auto msg =
+        std::string(
+            "\ttrigger_mode is activated. To trigger an image run `ros2 run ") +
+        this->get_name() + " trigger_image`";
+    log_warn(msg);
   }
 }
