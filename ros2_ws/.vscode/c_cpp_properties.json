@@ -5,7 +5,7 @@
       "includePath": [
         "${workspaceFolder}/**",
         "/opt/ros/eloquent/include",
-        "/home/abdul/ArenaSDK_Linux_x64/include/Arena",
+        "/home/abdul/ArenaSDK_Linux_x64/include/**",
         "/home/abdul/ArenaSDK_Linux_x64/GenICam/library/CPP/include"
       ],
       "defines": [],

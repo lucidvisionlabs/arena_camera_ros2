@@ -43,7 +43,7 @@ if [ $INSTALL_ROS2 -eq 1 ]; then
     sudo apt install ros-eloquent-ros-base --assume-yes
     #   -   Desktop Install (Recommended): ROS, RViz, demos, tutorials.
     sudo apt install ros-eloquent-desktop --assume-yes
-    #sudo apt-get install 'ros-eloquent-launch*' --assume-yes
+    sudo apt-get install 'ros-eloquent-launch*' --assume-yes
 
     # env setup --------------------------------------------
     #   - echo "source /opt/ros/eloquent/setup.bash" >> ~/.bashrc
@@ -55,9 +55,9 @@ if [ $INSTALL_ROS2 -eq 1 ]; then
     # workspace --------------------------------------------
 
     # package dep
-    #   - sudo apt-get update
-    #   - sudo apt-get install python-rosdep
-    #   - sudo rosdep init
+    sudo apt-get update
+    sudo apt-get install python-rosdep
+    sudo rosdep init
     
     # for each package to install package deps run
     #   - sudo rosdep install -i --from-path src --rosdistro $ROS_DISTRO -y

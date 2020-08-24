@@ -4,9 +4,14 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+        //---------------------------------------------------------------------
+        //
+        // My Args
+        //
+        //---------------------------------------------------------------------
         {
             // `./install/arena_camera_node/lib/arena_camera_node/start --ros-args -p exposure_time:=50.0 -p trigger_mode:=true`
-            "name": "rclcpp: arena_camera_node",
+            "name": "rclcpp: arena_camera_node args",
             "type": "cppdbg", //linux
             "MIMode": "gdb",
             "setupCommands": [
@@ -43,7 +48,13 @@
                 "/home/ubuntu/Jenkins/workspace/ArenaSDK_Master_Lin/": "${workspaceFolder:software}"
             }
         },
+        //---------------------------------------------------------------------
+        //
+        // Default Args
+        //
+        //---------------------------------------------------------------------
         {
+            // `./install/arena_camera_node/lib/arena_camera_node/start`
             "name": "rclcpp: arena_camera_node default args",
             "type": "cppdbg", //linux
             "MIMode": "gdb",
@@ -63,6 +74,11 @@
                 "/home/ubuntu/Jenkins/workspace/ArenaSDK_Master_Lin/": "${workspaceFolder:software}"
             }
         },
+        //---------------------------------------------------------------------
+        //
+        // trigger_image
+        //
+        //---------------------------------------------------------------------
         {
             // `./install/arena_camera_node/lib/arena_camera_node/trigger_image`
             "name": "trigger_image_clinet",
@@ -83,52 +99,6 @@
                 "/home/ubuntu/Jenkins/workspace/ArenaSDK_Master_Lin/": "${workspaceFolder:software}"
             }
         },
-        {
-            "name": "current_file",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal",
-            //"pythonPath": "${workspaceFolder:ros2_ws}/ve_dev/bin/python"
-        },
-        {
-            "name": "node : start",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/src/arena_camera_node/arena_camera_node/main.py",
-            "console": "integratedTerminal",
-            "args": [
-                "--ros-args",
-                "-p",
-                "serial:=904240001",
-                "-p",
-                "topic:=/arena_camera_node/WE_ARE_IMAGES",
-                "-p",
-                "width:=100",
-                "-p",
-                "height:=100",
-                "-p",
-                "pixelformat:=rgb8",
-                "-p",
-                "exposure_auto:=false",
-                "-p",
-                "exposure_time:=\"50\"",
-                "-p",
-                "trigger_mode:=true",
-            ],
-            "justMyCode": false,
-            //"pythonPath": "${workspaceFolder:ros2_ws}/ve_dev/bin/python"
-        },
-        {
-            "name": "Python: setup",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/src/arena_camera_node/setup.py",
-            "args": [
-                ""
-            ],
-            "console": "integratedTerminal"
-        }
     ]
 }
 /*
