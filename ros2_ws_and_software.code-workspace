@@ -1,25 +1,44 @@
 {
   "folders": [
     {
+      "name": "WS_ROOT",
+      "path": "ros2_ws"
+    },
+    {
+      "name": "PKG_ROOT",
+      "path": "ros2_ws/src/arena_camera_node"
+    },
+    {
+      "name": "ROS2_REPO_ROOT",
       "path": "."
     },
     {
-      "path": "../../arena_camera_ros"
+      "name": "SFW",
+      "path": "../software"
     },
     {
-      "path": "../../ArenaSDK_Linux_x64"
-    },
-    {
-      "path": "../../software"
-    },
-    {
-      "path": "../.."
+      "name": "ROS1_REPO_ROOT",
+      "path": "../arena_camera_ros"
     }
   ],
+  "extensions": {
+    "recommendations": [
+      "ms-vscode.cpptools",
+      "xaver.clang-format",
+      "streetsidesoftware.code-spell-checker",
+      "twxs.cmake",
+      "ms-vscode.cmake-tools",
+      "cheshirekow.cmake-format"
+    ],
+  },
   "settings": {
     //
     // editor
     //
+    //
+    // terminal
+    //
+    "terminal.integrated.cwd": "${workspaceFolder:WS_ROOT}",
     //
     // file
     //
@@ -27,7 +46,7 @@
     //
     // Python
     //
-    "python.pythonPath": "${workspaceFolder:ros2_ws}/ve_dev/bin/python",
+    "python.pythonPath": "${workspaceFolder:WS_ROOT}/ve_dev/bin/python",
     "python.linting.enabled": true,
     "python.linting.pylintEnabled": true,
     "python.jediEnabled": false, // if slow set it true to disable microsoft one
@@ -46,6 +65,23 @@
     "C_Cpp.intelliSenseEngineFallback": "Enabled",
     "C_Cpp.intelliSenseCacheSize": 200000,
     "C_Cpp.default.browse.path": [],
+    //
+    // Colcon
+    //
+    //"colcon.provideTasks": true, // must have to activate the ext 
+    //"colcon.colconCwd": "${workspaceFolder:WS_ROOT}",
+    //
+    // Cmake
+    //
+    "cmake.parallelJobs": 88,
+    "cmake.saveBeforeBuild": true,
+    "cmake.parseBuildDiagnostics": true,
+    // ${workspaceFolder} interpreted PKG_ROOT because it is selected form the status bar
+    "cmake.sourceDirectory": "${workspaceFolder}/CMakeLists.txt",
+    "cmake.installPrefix": "${workspaceFolder}/../../install",
+    "cmake.buildDirectory": "${workspaceFolder}/../../build",
+    "cmake.autoSelectActiveFolder": false,
+    "cmake.configureOnEdit": true,
     //
     "debug.onTaskErrors": "abort",
     "cSpell.words": [
@@ -130,5 +166,37 @@
       "typeindex": "cpp",
       "typeinfo": "cpp"
     },
+    "cSpell.ignoreWords": [
+      "c",
+      "c cpp intelli sense cache size",
+      "cache",
+      "checker",
+      "cheshirekow",
+      "cheshirekow cmake format",
+      "clang",
+      "cmake",
+      "code",
+      "cpp",
+      "cpptools",
+      "enabled",
+      "format",
+      "intelli",
+      "linting",
+      "ms",
+      "ms vscode cpptools",
+      "pylint",
+      "python",
+      "python linting pylint enabled",
+      "sense",
+      "size",
+      "spell",
+      "streetsidesoftware",
+      "streetsidesoftware code spell checker",
+      "twxs",
+      "twxs cmake",
+      "vscode",
+      "xaver",
+      "xaver clang format"
+    ]
   },
 }

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.15)
 
 project(arena_camera_node)
 
@@ -25,36 +25,39 @@ endif()
 #
 # -----------------------------------------------------------------------------
 
-# add arenasdk find file to the path
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
-#
+# ------------------
+# CUSTOM DEPS PATHS
+# ------------------
+
+# arenasdk find file dir
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
+
+# ----------
 # FIND DEPS
-#
+# ----------
 
 # finds dependencies
 # - same as the ones mentioned in package.xml under
 #   the tags <buildtool_depend>, <build_depend>, <exec_depend>
-# - for pakages used in #include "1234.h"
+# - for pakages used in #includes
 # - even if a dependency is used in one package, it has to be found
-#find_package(ament_cmake REQUIRED) # ?? why needed
-#find_package(ament_cmake_python REQUIRED) # why needed ?
-find_package(arena_sdk REQUIRED) # cmake ctyle no ament
+find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(arena_sdk REQUIRED)
 
-#
+# ------------
 # EXPORT DEPS
-#
-
+# ------------
 
 # export dependencies
 # For packages that depends on arena_camera_node
 # basically the dependecies of the depencey
 # these are the one mentioned in
-# - "fine_package"
+# - "find_package"
 # - "ament_target_dependencies"
 # - forgetting to export a depencey would not show at the time of
 #   building the package but when other packages use this package
@@ -70,9 +73,9 @@ find_package(sensor_msgs REQUIRED)
 #ament_export_dependencies(sensor_msgs)
 #ament_export_dependencies(std_srvs)
 
-#
+# -------------
 # LAUNCH FILES
-#
+# -------------
 
 # install launch files.
 #install(
@@ -80,9 +83,9 @@ find_package(sensor_msgs REQUIRED)
 #  DESTINATION share/${PROJECT_NAME}/
 # )
 
-#
+# --------
 # HEADERS
-#
+# --------
 
 # MV .hpp (s) to include dir
 #install(
@@ -105,11 +108,22 @@ find_package(sensor_msgs REQUIRED)
 
 set(target_name start)
 
-# CPP -> EXECUTABLE
-add_executable(${target_name} src/main.cpp
-                              src/ArenaCameraNode.cpp
-                              src/light_arena/deviceinfo_helper.cpp
-                              src/rclcpp_arena_adapter/pixelformat_translation.cpp)
+# CPP DEPS
+add_executable(${target_name}
+    src/main.cpp
+    src/ArenaCameraNode.cpp
+    src/light_arena/deviceinfo_helper.cpp
+    src/rclcpp_arena_adapter/pixelformat_translation.cpp
+)
+
+# HEADERS DEP
+#target_include_directories(${target_name}
+  #PRIVATE
+    #${arena_sdk_INCLUDE_DIRS}
+#  PUBLIC
+    #$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    #$<INSTALL_INTERFACE:include>
+#)
 
 # CPP -> .a file
 # creates :
@@ -126,13 +140,10 @@ add_executable(${target_name} src/main.cpp
 ament_target_dependencies(${target_name}  rclcpp 
                                           std_msgs 
                                           std_srvs
-                                          sensor_msgs )
+                                          sensor_msgs
+                                          arena_sdk
+                                          )
 
-# HEADERS DEP
-target_include_directories(${target_name}  PRIVATE	${arena_sdk_INCLUDE_DIRS})
-
-# LIBS DEP
-target_link_libraries(${target_name} ${arena_sdk_LIBS})
 
 # MV EXEC to lib dir
 install(TARGETS
@@ -163,10 +174,11 @@ ament_target_dependencies(${trigger_image}  rclcpp
                                           std_srvs)
 
 # HEADERS DEP
-#target_include_directories(${trigger_image}  PRIVATE	${arena_sdk_INCLUDE_DIRS})
-
-# LIBS DEP
-#target_link_libraries(${trigger_image} ${arena_sdk_LIBS})
+target_include_directories(${trigger_image}
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
 
 # MV EXEC to lib dir
 install(TARGETS

@@ -3,7 +3,7 @@
 	"tasks": [
 		{
 			"type": "shell",
-			"label": "remove_arti",
+			"label": "clean_ros2_repo_root",
 			"command": "rm",
 			"args": [
 				"-rf",
@@ -12,13 +12,54 @@
 				"log",
 			],
 			"options": {
-				"cwd": "${workspaceRoot:ros2_ws}"
+				"cwd": "${workspaceFolder:ROS2_REPO_ROOT}"
 			},
 			"group": "build"
 		},
 		{
 			"type": "shell",
-			"label": "colcon_build_debug",
+			"label": "clean_ws_root",
+			"command": "rm",
+			"args": [
+				"-rf",
+				"build",
+				"install",
+				"log",
+			],
+			"options": {
+				"cwd": "${workspaceFolder:WS_ROOT}"
+			},
+			"group": "build"
+		},
+		{
+			"type": "shell",
+			"label": "clean_pkg_root",
+			"command": "rm",
+			"args": [
+				"-rf",
+				"build",
+				"install",
+				"log",
+			],
+			"options": {
+				"cwd": "${workspaceFolder:PKG_ROOT}"
+			},
+			"group": "build"
+		},
+		{
+			"type": "shell",
+			"label": "clean_all",
+			"command": "echo",
+			"dependsOn": [
+				"clean_ros2_repo_root",
+				"clean_ws_root",
+				"clean_pkg_root",
+			],
+			"group": "build"
+		},
+		{
+			"type": "shell",
+			"label": "colcon_build_install_debug",
 			"command": "colcon",
 			"args": [
 				"build",
@@ -27,22 +68,60 @@
 				"-DCMAKE_BUILD_TYPE=Debug"
 			],
 			"options": {
-				"cwd": "${workspaceRoot:ros2_ws}",
+				"cwd": "${workspaceFolder:WS_ROOT}",
 			},
-			"dependsOn": "remove_arti",
+			//"dependsOn": "clean_all",
 			"group": "build"
 		},
 		{
 			"type": "shell",
-			"label": "ros_env_reload",
-			"command": "source install/local_setup.zsh",
-			"dependsOn": [
-				"colcon_build_debug"
+			"label": "launch_start_in_trigger_mode",
+			"command": "ros2",
+			// so args are ok with -p <>:=<> in one string others would have to be splitted
+			// by default split them
+			"args": [
+				"run",
+				"arena_camera_node",
+				"start",
+				"--ros-args",
+				"-p serial:=\"904240001\"",
+				"-p",
+				"topic:=/image",
+				//"topic:=/arena_camera_node/WE_ARE_IMAGES",
+				"-p",
+				"width:=100",
+				"-p",
+				"height:=100",
+				"-p",
+				"pixelformat:=rgb8",
+				//"pixelformat:=mono16",
+				"-p",
+				"exposure_time:=50.0",
+				"-p",
+				"trigger_mode:=true",
 			],
 			"options": {
-				"cwd": "${workspaceRoot:ros2_ws}",
+				"cwd": "${workspaceFolder:WS_ROOT}",
 			},
-			"group": "build"
+			"dependsOn": "colcon_build_install_debug",
+			"group": "build",
+			"isBackground": true,
+		},
+		{
+			"type": "shell",
+			"label": "launch_trigger_image",
+			"command": "ros2",
+			"args": [
+				"run",
+				"arena_camera_node",
+				"trigger_image",
+			],
+			"options": {
+				"cwd": "${workspaceFolder:WS_ROOT}",
+			},
+			"dependsOn": "colcon_build_install_debug",
+			"group": "build",
+			"isBackground": true,
 		}
 	]
 }

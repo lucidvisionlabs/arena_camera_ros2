@@ -74,8 +74,8 @@ sensor_msgs::msg::Image ArenaCameraNode::msg_form_image_(Arena::IImage* pImage)
     // TODO could be optimized by moving it out
     auto pixel_length_in_bytes = pImage->GetBitsPerPixel() / 8;
     auto width_length_in_bytes = pImage->GetWidth() * pixel_length_in_bytes;
-    auto image_data_length_in_bytes =
-        width_length_in_bytes * pImage->GetHeight();
+    // auto image_data_length_in_bytes =
+    //  width_length_in_bytes * pImage->GetHeight();
 
     auto image_msg = sensor_msgs::msg::Image();
     // for debugging
@@ -141,7 +141,7 @@ void ArenaCameraNode::publish_an_image_on_trigger_(
 
     // get image
     log_debug("getting an image");
-    image = m_pDevice->GetImage(100);
+    image = m_pDevice->GetImage(1000);
 
     auto msg = std::string("image ") + std::to_string(image->GetFrameId()) +
                " published to " + topic_;
@@ -172,7 +172,8 @@ void ArenaCameraNode::publish_an_image_on_trigger_(
       image = nullptr;
     }
     auto msg =
-        std::string("Exception occurred whhile grabbing an image\n") + e.what();
+        std::string("GenICam Exception occurred while grabbing an image\n") +
+        e.what();
     log_warn(msg);
     response->message = msg;
     response->success = false;
