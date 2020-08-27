@@ -5,7 +5,7 @@ set(_ARENA_SDK_CONF "/etc/ld.so.conf.d/Arena_SDK.conf")
 
 if(EXISTS ${_ARENA_SDK_CONF})
 
-	# get first line in Arena_SDK.conf which is the lib64 path. the get the
+	# get first line in Arena_SDK.conf which is the lib64 path. then get the
 	# parent direcotry of the first path which suppose to be the location of
 	# the installed ArenaSDK
 	execute_process(

@@ -40,7 +40,7 @@ Arena Camera deriver for ROS2
 # Explore
 - explore nodes
     - arena_camera_node
-      - This is the main node for each device created. It represent a Lucid Camera.
+      - This is the main node It represent one LUCID Camera.
       - it has two executable `start` and `trigger_image`
       - ros arguments
         - serial 
@@ -108,7 +108,7 @@ Arena Camera deriver for ROS2
   
         - To run a device in trigger mode
     
-            `ros2 run arena_camera_node start--ros-args -p exposure_time:=<proper value> -p trigger_mode=true`.
+            `ros2 run arena_camera_node start --ros-args -p exposure_time:=<proper value> -p trigger_mode=true`.
         
         - To trigger an image run 
             

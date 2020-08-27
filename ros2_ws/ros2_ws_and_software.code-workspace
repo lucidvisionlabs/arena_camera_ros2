@@ -7,13 +7,7 @@
       "path": "../../arena_camera_ros"
     },
     {
-      "path": "../../ArenaSDK_Linux_x64"
-    },
-    {
-      "path": "../../software"
-    },
-    {
-      "path": "../.."
+      "path": "src/arena_camera_node"
     }
   ],
   "settings": {
