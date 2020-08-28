@@ -1,0 +1,74 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "clean_repo_root",
+			"command": "rm",
+			"args": [
+				"-rf",
+				"build",
+				"install",
+				"log",
+			],
+			"options": {
+				"cwd": "${workspaceFolder:ROS2_REPO_ROOT}"
+			},
+			"group": "build"
+		},
+		{
+			"type": "shell",
+			"label": "clean_pkg_root",
+			"command": "rm",
+			"args": [
+				"-rf",
+				"build",
+			],
+			"options": {
+				"cwd": "${workspaceFolder:PKG_ROOT}"
+			},
+			"group": "build"
+		},
+		{
+			"type": "shell",
+			"label": "clean_all",
+			"dependsOn": [
+				"clean_repo_root",
+				"clean_pkg_root"
+			],
+			"command": "echo",
+			"options": {
+				"cwd": "${workspaceFolder:ROS2_REPO_ROOT}"
+			},
+			"group": "build"
+		},
+		/*{
+			"type": "shell",
+			"label": "colcon_build_debug",
+			"command": "colcon",
+			"args": [
+				"build",
+				"--symlink-install",
+				"--cmake-args",
+				"-DCMAKE_BUILD_TYPE=Debug"
+			],
+			"options": {
+				"cwd": "${workspaceFolder:ros2_ws}",
+			},
+			"dependsOn": "remove_arti",
+			"group": "build"
+		},*/
+		{
+			"type": "shell",
+			"label": "ros_env_reload",
+			"command": "source local_setup.sh",
+			"dependsOn": [
+				"colcon_build_debug"
+			],
+			"options": {
+				"cwd": "${workspaceFolder:PKG_ROOT}/build/ament_cmake_environment_hooks/",
+			},
+			"group": "build"
+		}
+	]
+}

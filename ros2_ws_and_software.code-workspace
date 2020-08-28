@@ -1,13 +1,19 @@
 {
   "folders": [
     {
+      "name": "PKG_ROOT",
+      "path": "ros2_ws/src/arena_camera_node"
+    },
+    {
+      "name": "WS_ROOT",
+      "path": "ros2_ws"
+    },
+    {
+      "name": "ROS2_REPO_ROOT",
       "path": "."
     },
     {
-      "path": "../../arena_camera_ros"
-    },
-    {
-      "path": "src/arena_camera_node"
+      "path": "../software"
     }
   ],
   "settings": {

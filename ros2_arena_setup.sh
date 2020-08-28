@@ -54,7 +54,7 @@ if [ $INSTALL_ROS2 -eq 1 ]; then
 
     # workspace --------------------------------------------
 
-    # package dep
+    # workspace package dep
     sudo apt-get update
     sudo apt-get install python-rosdep
     sudo rosdep init
@@ -62,11 +62,12 @@ if [ $INSTALL_ROS2 -eq 1 ]; then
     # for each package to install package deps run
     #   - sudo rosdep install -i --from-path src --rosdistro $ROS_DISTRO -y
     #   - arena_camera uses image msg which require python3-numpy
-    #     if was not installed by the rosdep for some reason, install using:
+    #     if was not installed by the rosdep for some reason install using:
     #       - sudo apt-get install python3-numpy
 
+    # workspace building tool
+    sudo apt install -y python3-colcon-common-extensions
     # for building workspaces with colcon
-    #   - sudo apt install -y python3-colcon-common-extensions
     #   - cd to <X> package root 
     #   - colcon build
     #   - echo "source <X>/setup.bash" >> ~/.bashrc

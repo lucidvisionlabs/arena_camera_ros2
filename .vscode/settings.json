@@ -1,2 +1,4 @@
 {
+    "C_Cpp.clang_format_fallbackStyle": "none",
+    "cmake.sourceDirectory": "${workspaceFolder:PKG_ROOT}"
 }

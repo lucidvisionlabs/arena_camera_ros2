@@ -11,7 +11,7 @@
         //---------------------------------------------------------------------
         {
             // `./install/arena_camera_node/lib/arena_camera_node/start --ros-args -p exposure_time:=50.0 -p trigger_mode:=true`
-            "name": "rclcpp: arena_camera_node args",
+            "name": "rclcpp: pkg args",
             "type": "cppdbg", //linux
             "MIMode": "gdb",
             "setupCommands": [
@@ -20,14 +20,15 @@
                 }
             ],
             "request": "launch",
-            "program": "${workspaceRoot:ros2_ws}/install/arena_camera_node/lib/arena_camera_node/start",
+            "program": "${workspaceFolder:PKG_ROOT}/build/start",
             "args": [
                 "--ros-args",
                 "-p",
                 "serial:=\"904240001\"",
                 //"serial:=904240001",
                 "-p",
-                "topic:=/arena_camera_node/WE_ARE_IMAGES",
+                //"topic:=/arena_camera_node/WE_ARE_IMAGES",
+                "topic:=/image",
                 "-p",
                 "width:=100",
                 "-p",
@@ -37,10 +38,10 @@
                 //"pixelformat:=mono16",
                 "-p",
                 "exposure_time:=50.0",
-                "-p",
-                "trigger_mode:=true",
+                //"-p",
+                //"trigger_mode:=true",
             ],
-            "cwd": "${workspaceRoot:ros2_ws}",
+            "cwd": "${workspaceFolder:PKG_ROOT}",
             "stopAtEntry": false,
             "preLaunchTask": "ros_env_reload",
             //"preLaunchTask": "colcon_build_debug",
@@ -55,7 +56,7 @@
         //---------------------------------------------------------------------
         {
             // `./install/arena_camera_node/lib/arena_camera_node/start`
-            "name": "rclcpp: arena_camera_node default args",
+            "name": "rclcpp: pkg default args",
             "type": "cppdbg", //linux
             "MIMode": "gdb",
             "setupCommands": [
@@ -64,11 +65,11 @@
                 }
             ],
             "request": "launch",
-            "program": "${workspaceRoot:ros2_ws}/install/arena_camera_node/lib/arena_camera_node/start",
+            "program": "${workspaceFolder:PKG_ROOT}/build/start",
             "args": [],
-            "cwd": "${workspaceRoot:ros2_ws}",
+            "cwd": "${workspaceFolder:PKG_ROOT}",
             "stopAtEntry": false,
-            "preLaunchTask": "ros_env_reload",
+            //"preLaunchTask": "ros_env_reload",
             //"preLaunchTask": "colcon_build_debug",
             "sourceFileMap": {
                 "/home/ubuntu/Jenkins/workspace/ArenaSDK_Master_Lin/": "${workspaceFolder:software}"
@@ -90,8 +91,8 @@
                 }
             ],
             "request": "launch",
-            "program": "${workspaceRoot:ros2_ws}/install/arena_camera_node/lib/arena_camera_node/trigger_image",
-            "cwd": "${workspaceRoot:ros2_ws}",
+            "program": "${workspaceFolder:PKG_ROOT}/biuld/trigger_image",
+            "cwd": "${workspaceFolder:PKG_ROOT}",
             "stopAtEntry": false,
             //"preLaunchTask": "ros_env_reload",
             //"preLaunchTask": "colcon_build_debug",
