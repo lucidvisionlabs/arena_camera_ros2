@@ -74,8 +74,8 @@ sensor_msgs::msg::Image ArenaCameraNode::msg_form_image_(Arena::IImage* pImage)
     // TODO could be optimized by moving it out
     auto pixel_length_in_bytes = pImage->GetBitsPerPixel() / 8;
     auto width_length_in_bytes = pImage->GetWidth() * pixel_length_in_bytes;
-    auto image_data_length_in_bytes =
-        width_length_in_bytes * pImage->GetHeight();
+    // auto image_data_length_in_bytes =
+    //  width_length_in_bytes * pImage->GetHeight();
 
     auto image_msg = sensor_msgs::msg::Image();
     // for debugging

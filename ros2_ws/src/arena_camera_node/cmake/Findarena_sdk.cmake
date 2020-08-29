@@ -47,7 +47,7 @@ if(EXISTS ${_ARENA_SDK_CONF})
 		#${_ArenaSDK_ROOT}/ffmpeg/libswresample.so
 		)
 
-	set(arena_sdk_LIBRARIES arena_sdk_LIBS)
+	set(arena_sdk_LIBRARIES ${arena_sdk_LIBS})
 
 	#set(arena_sdk_DEFINITIONS GENICAM_USER_ACCEPTS_ANY_COMPILER)
 	
@@ -59,4 +59,3 @@ else()
 						 "using the script provided by LUCID support "
 						 "team (support@thinklucid.com). ")
 endif()
-

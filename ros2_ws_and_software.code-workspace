@@ -1,20 +1,17 @@
 {
   "folders": [
     {
-      "name": "PKG_ROOT",
-      "path": "ros2_ws/src/arena_camera_node"
-    },
-    {
       "name": "WS_ROOT",
       "path": "ros2_ws"
+    },
+    {
+      "name": "PKG_ROOT",
+      "path": "ros2_ws/src/arena_camera_node"
     },
     {
       "name": "ROS2_REPO_ROOT",
       "path": "."
     },
-    {
-      "path": "../software"
-    }
   ],
   "settings": {
     //
@@ -46,6 +43,17 @@
     "C_Cpp.intelliSenseEngineFallback": "Enabled",
     "C_Cpp.intelliSenseCacheSize": 200000,
     "C_Cpp.default.browse.path": [],
+    //
+    // Colcon
+    //
+
+    //
+    // Cmake
+    //
+    "cmake.parallelJobs": 88,
+    "cmake.saveBeforeBuild": true,
+    "cmake.parseBuildDiagnostics": true,
+    "cmake.statusbar.advanced": {},
     //
     "debug.onTaskErrors": "abort",
     "cSpell.words": [

@@ -38,16 +38,16 @@
                 //"pixelformat:=mono16",
                 "-p",
                 "exposure_time:=50.0",
-                //"-p",
-                //"trigger_mode:=true",
+                "-p",
+                "trigger_mode:=true",
             ],
             "cwd": "${workspaceFolder:PKG_ROOT}",
             "stopAtEntry": false,
             "preLaunchTask": "ros_env_reload",
             //"preLaunchTask": "colcon_build_debug",
-            "sourceFileMap": {
-                "/home/ubuntu/Jenkins/workspace/ArenaSDK_Master_Lin/": "${workspaceFolder:software}"
-            }
+            //"sourceFileMap": {
+            //    "/home/ubuntu/Jenkins/workspace/ArenaSDK_Master_Lin/": "${workspaceFolder:software}"
+            //}
         },
         //---------------------------------------------------------------------
         //
@@ -91,14 +91,14 @@
                 }
             ],
             "request": "launch",
-            "program": "${workspaceFolder:PKG_ROOT}/biuld/trigger_image",
+            "program": "${workspaceFolder:PKG_ROOT}/build/trigger_image",
             "cwd": "${workspaceFolder:PKG_ROOT}",
             "stopAtEntry": false,
             //"preLaunchTask": "ros_env_reload",
             //"preLaunchTask": "colcon_build_debug",
-            "sourceFileMap": {
-                "/home/ubuntu/Jenkins/workspace/ArenaSDK_Master_Lin/": "${workspaceFolder:software}"
-            }
+            //"sourceFileMap": {
+            //    "/home/ubuntu/Jenkins/workspace/ArenaSDK_Master_Lin/": "${workspaceFolder:software}"
+            //}
         },
     ]
 }
