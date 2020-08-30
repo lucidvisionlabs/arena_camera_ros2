@@ -69,7 +69,10 @@
     "cmake.saveBeforeBuild": true,
     "cmake.parseBuildDiagnostics": true,
     "cmake.statusbar.advanced": {},
-    "cmake.sourceDirectory": "${workspaceFolder:PKG_ROOT}",
+    //"cmake.sourceDirectory": "${workspaceFolder:PKG_ROOT}/CMakeLists.txt",
+    "cmake.installPrefix": "${workspaceFolder}/../../install",
+    "cmake.buildDirectory": "${workspaceFolder}/../../build", // ${workspaceFolder} interpreted as the first folder on the top
+    "cmake.autoSelectActiveFolder": false,
     //
     "debug.onTaskErrors": "abort",
     "cSpell.words": [
@@ -154,5 +157,37 @@
       "typeindex": "cpp",
       "typeinfo": "cpp"
     },
+    "cSpell.ignoreWords": [
+      "c",
+      "c cpp intelli sense cache size",
+      "cache",
+      "checker",
+      "cheshirekow",
+      "cheshirekow cmake format",
+      "clang",
+      "cmake",
+      "code",
+      "cpp",
+      "cpptools",
+      "enabled",
+      "format",
+      "intelli",
+      "linting",
+      "ms",
+      "ms vscode cpptools",
+      "pylint",
+      "python",
+      "python linting pylint enabled",
+      "sense",
+      "size",
+      "spell",
+      "streetsidesoftware",
+      "streetsidesoftware code spell checker",
+      "twxs",
+      "twxs cmake",
+      "vscode",
+      "xaver",
+      "xaver clang format"
+    ]
   },
 }
