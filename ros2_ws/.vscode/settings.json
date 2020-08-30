@@ -1,0 +1,19 @@
+{
+    //
+    //
+    "colcon.provideTasks": true,
+    "colcon.globalSetup": [
+        "~/.zshrc",
+        "/opt/ros/eloquent/setup.zsh"
+    ],
+    "colcon.workspaceSetup": [
+        "install/setup.zsh"
+    ],
+    //
+    //"colcon.colconCwd": "${workspaceFolder:WS_ROOT}",
+    //"colcon.defaultEnvironment": {},
+    //"colcon.env": ".vscode/colcon.env",
+    "colcon.rosInstallPath.linux": "/opt/ros/eloquent/",
+    //"colcon.rosInstallPath.osx": "~/ros2_${version}/ros2-osx/",
+    //"colcon.rosInstallPath.windows": "C:\\dev\\ros2_${version}\\",
+}

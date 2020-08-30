@@ -1,4 +1,34 @@
 {
-    "C_Cpp.clang_format_fallbackStyle": "none",
-    "cmake.sourceDirectory": "${workspaceFolder:PKG_ROOT}"
+    "cSpell.ignoreWords": [
+        "c",
+        "c cpp intelli sense cache size",
+        "cache",
+        "checker",
+        "cheshirekow",
+        "cheshirekow cmake format",
+        "clang",
+        "cmake",
+        "code",
+        "cpp",
+        "cpptools",
+        "enabled",
+        "format",
+        "intelli",
+        "linting",
+        "ms",
+        "ms vscode cpptools",
+        "pylint",
+        "python",
+        "python linting pylint enabled",
+        "sense",
+        "size",
+        "spell",
+        "streetsidesoftware",
+        "streetsidesoftware code spell checker",
+        "twxs",
+        "twxs cmake",
+        "vscode",
+        "xaver",
+        "xaver clang format"
+    ]
 }

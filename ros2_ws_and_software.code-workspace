@@ -11,12 +11,26 @@
     {
       "name": "ROS2_REPO_ROOT",
       "path": "."
-    },
+    }
   ],
+  "extensions": {
+    "recommendations": [
+      "ms-vscode.cpptools",
+      "xaver.clang-format",
+      "streetsidesoftware.code-spell-checker",
+      "twxs.cmake",
+      "ms-vscode.cmake-tools",
+      "cheshirekow.cmake-format"
+    ],
+  },
   "settings": {
     //
     // editor
     //
+    //
+    // terminal
+    //
+    "terminal.integrated.cwd": "${workspaceFolder:WS_ROOT}",
     //
     // file
     //
@@ -24,7 +38,7 @@
     //
     // Python
     //
-    "python.pythonPath": "${workspaceFolder:ros2_ws}/ve_dev/bin/python",
+    "python.pythonPath": "${workspaceFolder:WS_ROOT}/ve_dev/bin/python",
     "python.linting.enabled": true,
     "python.linting.pylintEnabled": true,
     "python.jediEnabled": false, // if slow set it true to disable microsoft one
@@ -46,7 +60,8 @@
     //
     // Colcon
     //
-
+    //"colcon.provideTasks": true, // must have to activate the ext 
+    //"colcon.colconCwd": "${workspaceFolder:WS_ROOT}",
     //
     // Cmake
     //
@@ -54,6 +69,7 @@
     "cmake.saveBeforeBuild": true,
     "cmake.parseBuildDiagnostics": true,
     "cmake.statusbar.advanced": {},
+    "cmake.sourceDirectory": "${workspaceFolder:PKG_ROOT}",
     //
     "debug.onTaskErrors": "abort",
     "cSpell.words": [
