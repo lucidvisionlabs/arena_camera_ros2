@@ -32,13 +32,13 @@
                 //"serial:=904240001",
                 "-p",
                 //"topic:=/arena_camera_node/WE_ARE_IMAGES",
-                "topic:=/image",
+                "topic:=image",
                 "-p",
-                "width:=100",
+                "width:=4",
                 "-p",
-                "height:=100",
+                "height:=2",
                 "-p",
-                "pixelformat:=rgb8",
+                "pixelformat:=mono8",
                 //"pixelformat:=mono16",
                 "-p",
                 "exposure_time:=50.0",
@@ -48,7 +48,7 @@
             "cwd": "${workspaceFolder:WS_ROOT}",
             "stopAtEntry": false,
             //"preLaunchTask": "colcon_build_install_debug",
-            "preLaunchTask": "launch_trigger_image", // trigger_mode paramter must be passed up there
+            //"preLaunchTask": "launch_trigger_image", // trigger_mode paramter must be passed up there
             "sourceFileMap": {
                 "/home/ubuntu/Jenkins/workspace/ArenaSDK_Master_Lin/": "${workspaceFolder:SFW}/"
             }

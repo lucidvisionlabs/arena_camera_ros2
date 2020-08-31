@@ -141,7 +141,7 @@ void ArenaCameraNode::publish_an_image_on_trigger_(
 
     // get image
     log_debug("getting an image");
-    image = m_pDevice->GetImage(100);
+    image = m_pDevice->GetImage(1000);
 
     auto msg = std::string("image ") + std::to_string(image->GetFrameId()) +
                " published to " + topic_;
@@ -172,7 +172,8 @@ void ArenaCameraNode::publish_an_image_on_trigger_(
       image = nullptr;
     }
     auto msg =
-        std::string("Exception occurred whhile grabbing an image\n") + e.what();
+        std::string("GenICam Exception occurred while grabbing an image\n") +
+        e.what();
     log_warn(msg);
     response->message = msg;
     response->success = false;

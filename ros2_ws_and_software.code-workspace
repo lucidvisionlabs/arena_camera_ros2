@@ -15,6 +15,10 @@
     {
       "name": "SFW",
       "path": "../software"
+    },
+    {
+      "name": "ROS1_REPO_ROOT",
+      "path": "../arena_camera_ros"
     }
   ],
   "extensions": {

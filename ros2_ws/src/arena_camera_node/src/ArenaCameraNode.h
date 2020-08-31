@@ -45,6 +45,8 @@ class ArenaCameraNode : public rclcpp::Node
     //
     // PARAMS -----------------------------------------------------------------
     //
+    // TODO move t ofunction parse params like in the ros2 demos
+    // https://github.com/ros2/demos/blob/master/image_tools/src/cam2image.cpp
     std::string nextParameterToDeclare = "";
     try {
       nextParameterToDeclare = "serial";
@@ -104,6 +106,27 @@ class ArenaCameraNode : public rclcpp::Node
     // Publisher --------------------------------------------------------------
     //
     rclcpp::SensorDataQoS qos;
+    // TODO replace the simple qos with this
+    /*
+    auto qos = rclcpp::QoS(
+      rclcpp::QoSInitialization(
+        // The history policy determines how messages are saved until taken by
+        // the reader.
+        // KEEP_ALL saves all messages until they are taken.
+        // KEEP_LAST enforces a limit on the number of messages that are saved,
+        // specified by the "depth" parameter.
+        history_policy_,
+        // Depth represents how many messages to store in history when the
+        // history policy is KEEP_LAST.
+        depth_
+    ));
+    // The reliability policy can be reliable, meaning that the underlying
+    transport layer will try
+    // ensure that every message gets received in order, or best effort, meaning
+    that the transport
+    // makes no guarantees about the order or reliability of delivery.
+    qos.reliability(reliability_policy_)
+    */
     m_pub_ = this->create_publisher<sensor_msgs::msg::Image>(
         this->get_parameter("topic").as_string(), qos);
 
