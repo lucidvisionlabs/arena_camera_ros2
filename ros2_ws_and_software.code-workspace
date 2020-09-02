@@ -19,6 +19,10 @@
     {
       "name": "ROS1_REPO_ROOT",
       "path": "../arena_camera_ros"
+    },
+    {
+      "name": "ELOQUENT SRC CODE",
+      "path": "../../../opt/ros/eloquent"
     }
   ],
   "extensions": {
@@ -46,7 +50,7 @@
     //
     // Python
     //
-    "python.pythonPath": "${workspaceFolder:WS_ROOT}/ve_dev/bin/python",
+    "python.pythonPath": "ve_dev/bin/python",
     "python.linting.enabled": true,
     "python.linting.pylintEnabled": true,
     "python.jediEnabled": false, // if slow set it true to disable microsoft one
