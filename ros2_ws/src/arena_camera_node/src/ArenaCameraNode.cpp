@@ -39,6 +39,7 @@ void ArenaCameraNode::run_()
   m_pDevice.reset(device);
   set_nodes_();
   m_pDevice->StartStream();
+
   if (!trigger_mode_activated_) {
     publish_images_();
   } else {
@@ -51,7 +52,7 @@ void ArenaCameraNode::publish_images_()
   Arena::IImage* image = nullptr;
   while (rclcpp::ok()) {
     try {
-      image = m_pDevice->GetImage(100);
+      image = m_pDevice->GetImage(1000);
       auto image_msg = msg_form_image_(image);
       m_pub_->publish(image_msg);
       log_info(std::string("image ") + std::to_string(image->GetFrameId()) +
@@ -122,11 +123,10 @@ void ArenaCameraNode::publish_an_image_on_trigger_(
   Arena::IImage* image = nullptr;
   try {
     // trigger
-
     bool triggerArmed = false;
     auto waitForTriggerCount = 10;
     do {
-      // inifnate loop when I step in (sometimes)
+      // infinite loop when I step in (sometimes)
       triggerArmed =
           Arena::GetNodeValue<bool>(m_pDevice->GetNodeMap(), "TriggerArmed");
 
@@ -204,15 +204,15 @@ Arena::IDevice* ArenaCameraNode::create_device_ros_()
 
 void ArenaCameraNode::set_nodes_()
 {
-  set_nodes_load_default_profile();
-  set_nodes_roi();
-  set_nodes_gain();
-  set_nodes_pixelformat();
-  set_nodes_exposure();
-  set_nodes_trigger_mode();
+  set_nodes_load_default_profile_();
+  set_nodes_roi_();
+  set_nodes_gain_();
+  set_nodes_pixelformat_();
+  set_nodes_exposure_();
+  set_nodes_trigger_mode_();
 }
 
-void ArenaCameraNode::set_nodes_load_default_profile()
+void ArenaCameraNode::set_nodes_load_default_profile_()
 {
   auto nodemap = m_pDevice->GetNodeMap();
   // device run on default profile all the time if no args are passed
@@ -223,7 +223,7 @@ void ArenaCameraNode::set_nodes_load_default_profile()
   log_info("\tdefault profile is loaded");
 }
 
-void ArenaCameraNode::set_nodes_roi()
+void ArenaCameraNode::set_nodes_roi_()
 {
   auto nodemap = m_pDevice->GetNodeMap();
 
@@ -246,7 +246,7 @@ void ArenaCameraNode::set_nodes_roi()
            std::to_string(height_));
 }
 
-void ArenaCameraNode::set_nodes_gain()
+void ArenaCameraNode::set_nodes_gain_()
 {
   if (is_passed_gain_) {  // not default
     auto nodemap = m_pDevice->GetNodeMap();
@@ -255,7 +255,7 @@ void ArenaCameraNode::set_nodes_gain()
   }
 }
 
-void ArenaCameraNode::set_nodes_pixelformat()
+void ArenaCameraNode::set_nodes_pixelformat_()
 {
   auto nodemap = m_pDevice->GetNodeMap();
   // TODO ---------------------------------------------------------------------
@@ -294,7 +294,7 @@ void ArenaCameraNode::set_nodes_pixelformat()
   }
 }
 
-void ArenaCameraNode::set_nodes_exposure()
+void ArenaCameraNode::set_nodes_exposure_()
 {
   if (is_passed_exposure_time_) {
     auto nodemap = m_pDevice->GetNodeMap();
@@ -303,12 +303,10 @@ void ArenaCameraNode::set_nodes_exposure()
   }
 }
 
-void ArenaCameraNode::set_nodes_trigger_mode()
+void ArenaCameraNode::set_nodes_trigger_mode_()
 {
+  auto nodemap = m_pDevice->GetNodeMap();
   if (trigger_mode_activated_) {
-    auto nodemap = m_pDevice->GetNodeMap();
-    auto tl_stream_nodemap = m_pDevice->GetTLStreamNodeMap();
-
     if (exposure_time_ < 0) {
       log_warn(
           "\tavoid long waits wating for triggerd images by providing proper "
@@ -328,12 +326,16 @@ void ArenaCameraNode::set_nodes_trigger_mode()
                                            "Software");
     Arena::SetNodeValue<GenICam::gcstring>(nodemap, "TriggerSelector",
                                            "FrameStart");
-    Arena::GetNodeValue<GenICam::gcstring>(tl_stream_nodemap,
-                                           "StreamBufferHandlingMode");
     auto msg =
         std::string(
             "\ttrigger_mode is activated. To trigger an image run `ros2 run ") +
         this->get_name() + " trigger_image`";
     log_warn(msg);
+  }
+  // unset device from being in trigger mode if user did not pass trigger
+  // mode parameter because the trigger nodes are not rest when loading
+  // the user default profile
+  else {
+    Arena::SetNodeValue<GenICam::gcstring>(nodemap, "TriggerMode", "Off");
   }
 }
