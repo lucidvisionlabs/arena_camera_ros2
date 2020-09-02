@@ -17,12 +17,16 @@
       "path": "../software"
     },
     {
+      "name": "ARENASDK_RELEASE",
+      "path": "../ArenaSDK_Linux_x64"
+    },
+    {
       "name": "ROS1_REPO_ROOT",
       "path": "../arena_camera_ros"
     },
     {
       "name": "ELOQUENT SRC CODE",
-      "path": "../../../opt/ros/eloquent"
+      "path": "/opt/ros/eloquent"
     }
   ],
   "extensions": {
@@ -67,8 +71,14 @@
     "C_Cpp.workspaceSymbols": "All",
     "C_Cpp.loggingLevel": "Debug",
     "C_Cpp.intelliSenseEngineFallback": "Enabled",
-    "C_Cpp.intelliSenseCacheSize": 200000,
-    "C_Cpp.default.browse.path": [],
+    "C_Cpp.intelliSenseCacheSize": 900000,
+    "C_Cpp.default.browse.path": [
+      "${workspaceFolder}/**",
+      //"/opt/ros/eloquent/include/**",
+      //"/home/abdul/ArenaSDK_Linux_x64/**",
+      //"/mnt/c/softwarelib/**"
+    ],
+    "C_Cpp.autocomplete": "Default",
     //
     // Colcon
     //

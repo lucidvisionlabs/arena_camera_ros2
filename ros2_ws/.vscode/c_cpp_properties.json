@@ -4,18 +4,15 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder:PKG_ROOT}/src/**",
-                "/opt/ros/eloquent/include",
-                "/home/abdul/ArenaSDK_Linux_x64/include/**",
-                "/home/abdul/ArenaSDK_Linux_x64/include/Arena",
-                "/home/abdul/ArenaSDK_Linux_x64/GenICam/library/CPP/include"
+                "/opt/ros/eloquent/include/**",
+                "/home/abdul/ArenaSDK_Linux_x64/**",
+                "/mnt/c/softwarelib/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "c11",
             "cppStandard": "c++14",
             "intelliSenseMode": "${default}",
-            "configurationProvider": "ms-vscode.cmake-tools"
         },
         {
             "name": "Win32",

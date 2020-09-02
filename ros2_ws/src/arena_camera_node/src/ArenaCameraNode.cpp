@@ -136,7 +136,7 @@ void ArenaCameraNode::publish_an_image_on_trigger_(
 
     } while (triggerArmed == false);
 
-    log_debug("trigger is armed; triggring an image");
+    log_debug("trigger is armed; triggering an image");
     Arena::ExecuteNode(m_pDevice->GetNodeMap(), "TriggerSoftware");
 
     // get image
