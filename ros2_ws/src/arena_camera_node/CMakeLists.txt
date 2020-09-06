@@ -113,7 +113,8 @@ add_executable(${target_name}
     src/main.cpp
     src/ArenaCameraNode.cpp
     src/light_arena/deviceinfo_helper.cpp
-    src/rclcpp_arena_adapter/pixelformat_translation.cpp
+    src/rclcpp_adapter/pixelformat_translation.cpp
+    src/rclcpp_adapter/quilty_of_service_translation.cpp
 )
 
 # HEADERS DEP
