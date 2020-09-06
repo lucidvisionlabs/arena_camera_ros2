@@ -3,10 +3,10 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**",
-                "/opt/ros/eloquent/include/**",
-                "/home/abdul/ArenaSDK_Linux_x64/**",
-                "/mnt/c/softwarelib/**"
+                //"${workspaceFolder}/**",
+                //"/opt/ros/eloquent/include/**",
+                //"/home/abdul/ArenaSDK_Linux_x64/**",
+                //"/mnt/c/softwarelib/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

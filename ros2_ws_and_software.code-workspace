@@ -16,6 +16,7 @@
       "name": "SFW",
       "path": "../software"
     },
+    /*
     {
       "name": "ARENASDK_RELEASE",
       "path": "../ArenaSDK_Linux_x64"
@@ -27,7 +28,7 @@
     {
       "name": "ELOQUENT SRC CODE",
       "path": "/opt/ros/eloquent"
-    }
+    }*/
   ],
   "extensions": {
     "recommendations": [
@@ -74,8 +75,8 @@
     "C_Cpp.intelliSenseCacheSize": 900000,
     "C_Cpp.default.browse.path": [
       "${workspaceFolder}/**",
-      //"/opt/ros/eloquent/include/**",
-      //"/home/abdul/ArenaSDK_Linux_x64/**",
+      "/opt/ros/eloquent/include/**",
+      "/home/abdul/ArenaSDK_Linux_x64/Arena/**",
       //"/mnt/c/softwarelib/**"
     ],
     "C_Cpp.autocomplete": "Default",
@@ -100,6 +101,7 @@
     "debug.onTaskErrors": "abort",
     "cSpell.words": [
       "BGGR",
+      "CMDLN",
       "GPIO",
       "GRBG",
       "Pfnc",
@@ -178,7 +180,9 @@
       "cfenv": "cpp",
       "cinttypes": "cpp",
       "typeindex": "cpp",
-      "typeinfo": "cpp"
+      "typeinfo": "cpp",
+      "*.idl": "cpp",
+      "*.ipp": "cpp"
     },
     "cSpell.ignoreWords": [
       "c",
@@ -211,6 +215,7 @@
       "vscode",
       "xaver",
       "xaver clang format"
-    ]
+    ],
+    "ros.distro": "eloquent"
   },
 }

@@ -32,16 +32,17 @@
                 //"serial:=904240001",
                 "-p",
                 "topic:=image",
+                //"topic:=/image",
                 //"topic:=/arena_camera_node/WE_ARE_IMAGES",
-                //"-p",
-                //"width:=4",
-                //"-p",
-                //"height:=2",
                 "-p",
-                "pixelformat:=rgb8",
+                "width:=400",
+                "-p",
+                "height:=200",
+                "-p",
+                "pixelformat:=mono8",
                 //"pixelformat:=mono16",
-                "-p",
-                "exposure_time:=50.0",
+                //"-p",
+                //"exposure_time:=50.0",
                 //"-p",
                 //"trigger_mode:=true",
             ],
@@ -51,6 +52,56 @@
             //"preLaunchTask": "launch_trigger_image", // trigger_mode paramter must be passed up there
             "sourceFileMap": {
                 "/home/ubuntu/Jenkins/workspace/ArenaSDK_Master_Lin/": "${workspaceFolder:SFW}/"
+            }
+        },
+        {
+            "name": "image_tools_showimage",
+            "type": "cppdbg",
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "text": "-enable-pretty-printing" // for std::string to show value on houver while steppingg
+                }
+            ],
+            "request": "launch",
+            "program": "${workspaceFolder:WS_ROOT}/install/image_tools/lib/image_tools/showimage",
+            "args": [
+                "--ros-args",
+                "-p",
+                "reliability:=best_effort",
+                "-p",
+                "depth:=5"
+            ],
+            "cwd": "${workspaceFolder:WS_ROOT}",
+            //"stopAtEntry": true,
+            //"preLaunchTask": "colcon_build_install_debug",
+            //"preLaunchTask": "launch_trigger_image", // trigger_mode paramter must be passed up there
+            "sourceFileMap": {
+                //"/": "${workspaceFolder:WS_ROOT}/demos/image_tools/src"
+            }
+        },
+        {
+            "name": "image_tools_cam2image_burger",
+            "type": "cppdbg",
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "text": "-enable-pretty-printing" // for std::string to show value on houver while steppingg
+                }
+            ],
+            "request": "launch",
+            "program": "${workspaceFolder:WS_ROOT}/install/image_tools/lib/image_tools/cam2image",
+            "args": [
+                "--ros-args",
+                "-p",
+                "burger_mode:=True"
+            ],
+            "cwd": "${workspaceFolder:WS_ROOT}",
+            //"stopAtEntry": true,
+            //"preLaunchTask": "colcon_build_install_debug",
+            //"preLaunchTask": "launch_trigger_image", // trigger_mode paramter must be passed up there
+            "sourceFileMap": {
+                //"/xxxxxxxxxxxxxxxxxxx": "${workspaceFolder:WS_ROOT}/demos/image_tools/src"
             }
         },
         //---------------------------------------------------------------------
