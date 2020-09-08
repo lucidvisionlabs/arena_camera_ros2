@@ -6,7 +6,7 @@ Arena Camera deriver for ROS2
   
 # Requirements
 - 1 
-  - OS       : Linux (x64/amd64) (>=18.04) 
+  - OS       : Linux (x64/amd64) (==18.04) 
   - ROS2     : Eloquent distro (installation steps in ros2_arena_setup.sh)
   - ArenaSDK : Contact support@thinklucid.com
   - arena_api : Contact support@thinklucid.com
@@ -40,7 +40,7 @@ Arena Camera deriver for ROS2
 # Explore
 - explore nodes
     - arena_camera_node
-      - This is the main node It represent one LUCID Camera.
+      - this is the main node. It represent one LUCID Camera.
       - it has two executable `start` and `trigger_image`
       - ros arguments
         - serial 
@@ -77,50 +77,73 @@ Arena Camera deriver for ROS2
           - default value is false. It means the device will be publishing images to the
             default topic `/arena_camera_node/images`.
           - values are true and false.
-          - when false, images can be viewed 
-  
-            `ros2 run arena_camera_node start`
-            `ros2 run image_tools showimage -t /arena_camera_node/images`
+          - when `false`, images can be viewed
+
+            `ros2 run arena_camera_node start --ros-args -p qos_reliability:=reliable -p topic:=image`
+
+            `ros2 run image_tools showimage`
+
+          - when `true`, image would not be published unless requested/triggered
+
+            `ros2 run arena_camera_node start --ros-args -p qos_reliability:=reliable -p topic:=image -p exposure_time:=<proper value> -p trigger_mode:=true`
+
+            `ros2 run image_tools showimage # no image will be displayed yet`
+
+            `ros2 run arena_camera_node trigger_image`
+       
+      - QoS related parameters
+        - if using these images with some subscriber make sure: 
+          - both `arena_camera_node` and the subscriber on the same topic.
+          - both have the same `QoS` settings else the images will be published but the subscriber would not see them because the image mags have a different `QoS` than the subscriber.
+          - `QoS` parameter
+          - qos_history
+            - represents the history value of `QoS` for the image publisher.
+            - default value is `keep_last`. 
+            - supported values are "system_default","keep_last", "keep_all", "unknown".
+            - more about `QoS`: https://index.ros.org/doc/ros2/Concepts/About-Quality-of-Service-Settings/
           
-          - when true, image would not be published unless requested/triggered
-  
-            `ros2 run arena_camera_node start --ros-args -p exposure_time:=<proper value> -p trigger_mode:=true`
-            `ros2 run image_tools showimage -t /arena_camera_node/images # no image will be displayed yet`
-            `ros2 run arena_camera_node trigger_image`
-       - examples for using all arguments
-            
-            `ros2 run arena_camera_node start --ros-args -p serial:="904240001" -p topic:=/special_images -p width:=100 -p height:=200 -p pixelformat:=rgb8 -p gain:=10 -p exposure_time:=150 -p trigger_mode:=true` 
+          - qos_history_depth
+            - represents the depth value of `QoS` for the image publisher.
+            - default value is `5`.
+            - more about `QoS`: https://index.ros.org/doc/ros2/Concepts/About-Quality-of-Service-Settings/
+          
+          - qos_reliability
+            - represents the reliability value of `QoS` for the image publisher.
+            - default value is `best_effort`
+            - supported values are "system_default", "reliable", "best_effort", "unknown".
+            - more about `QoS`: https://index.ros.org/doc/ros2/Concepts/About-Quality-of-Service-Settings/
 
-    explore excutables
+        # simple example for using arguments together
 
-        ros2 pkg executables | grep arena
+          `ros2 run arena_camera_node start --ros-args -p serial:="904240001" -p topic:=/special_images -p width:=100 -p height:=200 -p pixelformat:=rgb8 -p gain:=10 -p exposure_time:=150 -p trigger_mode:=true` 
+
+- explore excutables
+
+  - `ros2 pkg executables | grep arena`
     
-    all excutables can be run by using 
-        
-        `ros2 run <pakg name> <executable name>`
+  - all excutables can be run by using 
 
-    explore actions
-    - None
+    `ros2 run <pakg name> <executable name>`
 
-    explore services 
-    - trigger_image 
-      - trigger image form a device that is running in trigger_mode.
+- explore actions
   
-        - To run a device in trigger mode
-    
-            `ros2 run arena_camera_node start --ros-args -p exposure_time:=<proper value> -p trigger_mode=true`.
-        
-        - To trigger an image run 
-            
-            `ros2 run arena_camera_node trigger_image`
+  - None
+
+- explore services 
+  - trigger_image 
+    - trigger image form a device that is running in trigger_mode.
+    - To run a device in trigger mode
+      `ros2 run arena_camera_node start --ros-args -p exposure_time:=<proper value> -p trigger_mode=true`
+    - To trigger an image run 
+      `ros2 run arena_camera_node trigger_image`
 
 # Road map
+- support windows
+- add -h flag to nodes
+- showimage node to view 2D and 3D images
 - launch file
-- send raw images
+- support ARM64 and ARMhf
 - camera_info
 - access to nodemaps
 - settings dump/read to/from file
 - support two devices
-- support windows
-- support ARM64 and ARMhf
-- launch file
