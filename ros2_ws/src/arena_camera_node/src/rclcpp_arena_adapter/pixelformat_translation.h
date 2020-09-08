@@ -1,14 +1,9 @@
 #pragma once
 
-// STD
 #include <map>
-#include <string>
-
-// ROS2
 #include <sensor_msgs/image_encodings.hpp>
-
-// ArenaSDK
-#include "ArenaApi.h"  // GetPixelFormatName() , PfncFormat::
+#include <string>
+#include "ArenaApi.h"
 
 static std::map<std::string, std::string> K_ROS2_PIXELFORMAT_TO_PFNC(
     {{sensor_msgs::image_encodings::RGB8, GetPixelFormatName(PfncFormat::RGB8)},

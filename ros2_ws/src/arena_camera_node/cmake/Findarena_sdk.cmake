@@ -5,7 +5,7 @@ set(_ARENA_SDK_CONF "/etc/ld.so.conf.d/Arena_SDK.conf")
 
 if(EXISTS ${_ARENA_SDK_CONF})
 
-	# get first line in Arena_SDK.conf which is the lib64 path. then get the
+	# get first line in Arena_SDK.conf which is the lib64 path. the get the
 	# parent direcotry of the first path which suppose to be the location of
 	# the installed ArenaSDK
 	execute_process(
@@ -47,7 +47,7 @@ if(EXISTS ${_ARENA_SDK_CONF})
 		#${_ArenaSDK_ROOT}/ffmpeg/libswresample.so
 		)
 
-	set(arena_sdk_LIBRARIES ${arena_sdk_LIBS})
+	set(arena_sdk_LIBRARIES arena_sdk_LIBS)
 
 	#set(arena_sdk_DEFINITIONS GENICAM_USER_ACCEPTS_ANY_COMPILER)
 	
@@ -59,3 +59,4 @@ else()
 						 "using the script provided by LUCID support "
 						 "team (support@thinklucid.com). ")
 endif()
+

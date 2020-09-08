@@ -4,122 +4,9 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        //---------------------------------------------------------------------
-        //
-        // My Args
-        //
-        //---------------------------------------------------------------------
         {
-            // `./install/arena_camera_node/lib/arena_camera_node/start \
-            //      --ros-args \
-            //      -p exposure_time:=50.0 \
-            //      -p trigger_mode:=true` 
-            //
-            "name": "start with args",
-            "type": "cppdbg",
-            "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "text": "-enable-pretty-printing" // for std::string to show value on houver while steppingg
-                }
-            ],
-            "request": "launch",
-            "program": "${workspaceFolder:WS_ROOT}/install/arena_camera_node/lib/arena_camera_node/start",
-            "args": [
-                "--ros-args",
-                "-p",
-                "serial:=\"904240001\"",
-                //"serial:=904240001",
-                "-p",
-                "topic:=image",
-                //"topic:=/image",
-                //"topic:=/arena_camera_node/WE_ARE_IMAGES",
-                "-p",
-                "width:=400",
-                "-p",
-                "height:=200",
-                "-p",
-                "pixelformat:=mono8",
-                //"pixelformat:=mono16",
-                //"-p",
-                //"exposure_time:=50.0",
-                "-p",
-                "trigger_mode:=true",
-                //"-p",
-                //"qos_history:=keep_all",
-                //"qos_history:=keep_last",
-                //"-p",
-                //"qos_history_depth:=10",
-                "-p",
-                "qos_reliability:=reliable"
-                //"qos_reliability:=best_effort"
-            ],
-            "cwd": "${workspaceFolder:WS_ROOT}",
-            "stopAtEntry": false,
-            "preLaunchTask": "colcon_build_install_debug",
-            //"preLaunchTask": "launch_trigger_image", // trigger_mode paramter must be passed up there
-            "sourceFileMap": {
-                "/home/ubuntu/Jenkins/workspace/ArenaSDK_Master_Lin/": "${workspaceFolder:SFW}/"
-            }
-        },
-        {
-            "name": "image_tools_showimage",
-            "type": "cppdbg",
-            "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "text": "-enable-pretty-printing" // for std::string to show value on houver while steppingg
-                }
-            ],
-            "request": "launch",
-            "program": "${workspaceFolder:WS_ROOT}/install/image_tools/lib/image_tools/showimage",
-            "args": [
-                "--ros-args",
-                "-p",
-                "reliability:=best_effort",
-                "-p",
-                "depth:=5"
-            ],
-            "cwd": "${workspaceFolder:WS_ROOT}",
-            //"stopAtEntry": true,
-            //"preLaunchTask": "colcon_build_install_debug",
-            //"preLaunchTask": "launch_trigger_image", // trigger_mode paramter must be passed up there
-            "sourceFileMap": {
-                //"/": "${workspaceFolder:WS_ROOT}/demos/image_tools/src"
-            }
-        },
-        {
-            "name": "image_tools_cam2image_burger",
-            "type": "cppdbg",
-            "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "text": "-enable-pretty-printing" // for std::string to show value on houver while steppingg
-                }
-            ],
-            "request": "launch",
-            "program": "${workspaceFolder:WS_ROOT}/install/image_tools/lib/image_tools/cam2image",
-            "args": [
-                "--ros-args",
-                "-p",
-                "burger_mode:=True"
-            ],
-            "cwd": "${workspaceFolder:WS_ROOT}",
-            //"stopAtEntry": true,
-            //"preLaunchTask": "colcon_build_install_debug",
-            //"preLaunchTask": "launch_trigger_image", // trigger_mode paramter must be passed up there
-            "sourceFileMap": {
-                //"/": "${workspaceFolder:WS_ROOT}/demos/image_tools/src"
-            }
-        },
-        //---------------------------------------------------------------------
-        //
-        // Default Args
-        //
-        //---------------------------------------------------------------------
-        {
-            // `./install/arena_camera_node/lib/arena_camera_node/start`
-            "name": "start no args",
+            // `./install/arena_camera_node/lib/arena_camera_node/start --ros-args -p exposure_time:=50.0 -p trigger_mode:=true`
+            "name": "rclcpp: arena_camera_node",
             "type": "cppdbg", //linux
             "MIMode": "gdb",
             "setupCommands": [
@@ -128,23 +15,37 @@
                 }
             ],
             "request": "launch",
-            "program": "${workspaceFolder:WS_ROOT}/install/arena_camera_node/lib/arena_camera_node/start",
-            "cwd": "${workspaceFolder:WS_ROOT}",
+            "program": "${workspaceRoot:ros2_ws}/install/arena_camera_node/lib/arena_camera_node/start",
+            "args": [
+                "--ros-args",
+                "-p",
+                "serial:=\"904240001\"",
+                //"serial:=904240001",
+                "-p",
+                "topic:=/arena_camera_node/WE_ARE_IMAGES",
+                "-p",
+                "width:=100",
+                "-p",
+                "height:=100",
+                "-p",
+                "pixelformat:=rgb8",
+                //"pixelformat:=mono16",
+                "-p",
+                "exposure_time:=50.0",
+                "-p",
+                "trigger_mode:=true",
+            ],
+            "cwd": "${workspaceRoot:ros2_ws}",
             "stopAtEntry": false,
-            "preLaunchTask": "colcon_build_install_debug",
+            "preLaunchTask": "ros_env_reload",
+            //"preLaunchTask": "colcon_build_debug",
             "sourceFileMap": {
-                "/home/ubuntu/Jenkins/workspace/ArenaSDK_Master_Lin/": "${workspaceFolder:SFW}/"
+                "/home/ubuntu/Jenkins/workspace/ArenaSDK_Master_Lin/": "${workspaceFolder:software}"
             }
         },
-        //---------------------------------------------------------------------
-        //
-        // trigger_image
-        //
-        //---------------------------------------------------------------------
         {
-            // `./install/arena_camera_node/lib/arena_camera_node/trigger_image`
-            "name": "trigger_image",
-            "type": "cppdbg",
+            "name": "rclcpp: arena_camera_node default args",
+            "type": "cppdbg", //linux
             "MIMode": "gdb",
             "setupCommands": [
                 {
@@ -152,14 +53,81 @@
                 }
             ],
             "request": "launch",
-            "program": "${workspaceFolder:WS_ROOT}/install/arena_camera_node/lib/arena_camera_node/trigger_image",
-            "cwd": "${workspaceFolder:WS_ROOT}",
+            "program": "${workspaceRoot:ros2_ws}/install/arena_camera_node/lib/arena_camera_node/start",
+            "args": [],
+            "cwd": "${workspaceRoot:ros2_ws}",
             "stopAtEntry": false,
-            //"preLaunchTask": "colcon_build_install_debug",
-            //"preLaunchTask": "launch_start_in_trigger_mode",
+            "preLaunchTask": "ros_env_reload",
+            //"preLaunchTask": "colcon_build_debug",
             "sourceFileMap": {
-                "/home/ubuntu/Jenkins/workspace/ArenaSDK_Master_Lin/": "${workspaceFolder:SFW}/"
+                "/home/ubuntu/Jenkins/workspace/ArenaSDK_Master_Lin/": "${workspaceFolder:software}"
             }
+        },
+        {
+            // `./install/arena_camera_node/lib/arena_camera_node/trigger_image`
+            "name": "trigger_image_clinet",
+            "type": "cppdbg", //linux
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "text": "-enable-pretty-printing" // for std::string to show value
+                }
+            ],
+            "request": "launch",
+            "program": "${workspaceRoot:ros2_ws}/install/arena_camera_node/lib/arena_camera_node/trigger_image",
+            "cwd": "${workspaceRoot:ros2_ws}",
+            "stopAtEntry": false,
+            //"preLaunchTask": "ros_env_reload",
+            //"preLaunchTask": "colcon_build_debug",
+            "sourceFileMap": {
+                "/home/ubuntu/Jenkins/workspace/ArenaSDK_Master_Lin/": "${workspaceFolder:software}"
+            }
+        },
+        {
+            "name": "current_file",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            //"pythonPath": "${workspaceFolder:ros2_ws}/ve_dev/bin/python"
+        },
+        {
+            "name": "node : start",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/arena_camera_node/arena_camera_node/main.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--ros-args",
+                "-p",
+                "serial:=904240001",
+                "-p",
+                "topic:=/arena_camera_node/WE_ARE_IMAGES",
+                "-p",
+                "width:=100",
+                "-p",
+                "height:=100",
+                "-p",
+                "pixelformat:=rgb8",
+                "-p",
+                "exposure_auto:=false",
+                "-p",
+                "exposure_time:=\"50\"",
+                "-p",
+                "trigger_mode:=true",
+            ],
+            "justMyCode": false,
+            //"pythonPath": "${workspaceFolder:ros2_ws}/ve_dev/bin/python"
+        },
+        {
+            "name": "Python: setup",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/arena_camera_node/setup.py",
+            "args": [
+                ""
+            ],
+            "console": "integratedTerminal"
         }
     ]
 }
