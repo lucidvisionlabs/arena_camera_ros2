@@ -52,9 +52,9 @@ void ArenaCameraNode::parse_parameters_()
     pub_qos_history_ = this->declare_parameter("qos_history", "");
     is_passed_pub_qos_history_ = pub_qos_history_ != "";
 
-    nextParameterToDeclare = "qos_depth";
-    pub_qos_history_depth_ = this->declare_parameter("qos_depth", 0);
-    is_passed_pub_qos_history_depth_ = pub_qos_history_depth_ >= 0;
+    nextParameterToDeclare = "qos_history_depth";
+    pub_qos_history_depth_ = this->declare_parameter("qos_history_depth", 0);
+    is_passed_pub_qos_history_depth_ = pub_qos_history_depth_ > 0;
 
     nextParameterToDeclare = "qos_reliability";
     pub_qos_reliability_ = this->declare_parameter("qos_reliability", "");
@@ -127,53 +127,63 @@ void ArenaCameraNode::initialize_()
     false // avoid ros namespace conventions
   };
   */
-
-  /*
-    rmw_qos_history_policy_t history;
-
-    if (is_passed_pub_qos_history_) {
-      if (is_supported_qos_histroy_policy(pub_qos_history_)) {
-        history = K_CMDLN_PARAMETER_TO_QOS_HISTORY[pub_qos_history_];
-      } else {
-        log_err(pub_qos_history_ + " is not supported for this node");
-        // TODO
-        // should thorow instead??
-        // should this keeps shutting down if for some reasons this node is kept
-        // alive
-        rclcpp::shutdown();
-      }
-    }
-
-    // TODO
-    // make sure it is not in the state of being ignored before setting
-    if (is_passed_pub_qos_history_depth_ &&
-        m_pub_qos_.history == RMW_QOS_POLICY_HISTORY_KEEP_LAST) {
+  rclcpp::SensorDataQoS pub_qos_;
+  // QoS history
+  if (is_passed_pub_qos_history_) {
+    if (is_supported_qos_histroy_policy(pub_qos_history_)) {
+      pub_qos_.history(
+          K_CMDLN_PARAMETER_TO_QOS_HISTORY_POLICY[pub_qos_history_]);
+    } else {
+      log_err(pub_qos_history_ + " is not supported for this node");
       // TODO
-      // test err msg withwhen -1
-      m_pub_qos_.depth = pub_qos_history_depth_;
+      // should thorow instead??
+      // should this keeps shutting down if for some reasons this node is kept
+      // alive
+      throw;
     }
+  }
+  // QoS depth
+  if (is_passed_pub_qos_history_depth_ &&
+      K_CMDLN_PARAMETER_TO_QOS_HISTORY_POLICY[pub_qos_history_] ==
+          RMW_QOS_POLICY_HISTORY_KEEP_LAST) {
+    // TODO
+    // test err msg withwhen -1
+    pub_qos_.keep_last(pub_qos_history_depth_);
+  }
 
-    if (is_passed_pub_qos_reliability_) {
-      if (is_supported_qos_reliability_policy(pub_qos_reliability_)) {
-        m_pub_qos_.reliability =
-            K_CMDLN_PARAMETER_TO_QOS_RELIABILITY_POLICY[pub_qos_reliability_];
-      } else {
-        log_err(pub_qos_reliability_ + " is not supported for this node");
-        // TODO
-        // should thorow instead??
-        // should this keeps shutting down if for some reasons this node is kept
-        // alive
-        rclcpp::shutdown();
-      }
+  // Qos reliability
+  if (is_passed_pub_qos_reliability_) {
+    if (is_supported_qos_reliability_policy(pub_qos_reliability_)) {
+      pub_qos_.reliability(
+          K_CMDLN_PARAMETER_TO_QOS_RELIABILITY_POLICY[pub_qos_reliability_]);
+    } else {
+      log_err(pub_qos_reliability_ + " is not supported for this node");
+      throw;
     }
-  */
+  }
+
   // rmw_qos_history_policy_t history_policy_ = RMW_QOS_
   // rmw_qos_history_policy_t;
   // auto pub_qos_init = rclcpp::QoSInitialization(history_policy_, );
 
-  rclcpp::SensorDataQoS pub_qos_;
   m_pub_ = this->create_publisher<sensor_msgs::msg::Image>(
       this->get_parameter("topic").as_string(), pub_qos_);
+
+  std::stringstream pub_qos_info;
+  auto pub_qos_profile = pub_qos_.get_rmw_qos_profile();
+  pub_qos_info
+      << '\t' << "QoS history     = "
+      << K_QOS_HISTORY_POLICY_TO_CMDLN_PARAMETER[pub_qos_profile.history]
+      << '\n';
+  pub_qos_info << "\t\t\t\t"
+               << "QoS depth       = " << pub_qos_profile.depth << '\n';
+  pub_qos_info << "\t\t\t\t"
+               << "QoS reliability = "
+               << K_QOS_RELIABILITY_POLICY_TO_CMDLN_PARAMETER[pub_qos_profile
+                                                                  .reliability]
+               << '\n';
+
+  log_info(pub_qos_info.str());
 }
 
 void ArenaCameraNode::wait_for_device_timer_callback_()
@@ -508,7 +518,7 @@ void ArenaCameraNode::set_nodes_trigger_mode_()
   if (trigger_mode_activated_) {
     if (exposure_time_ < 0) {
       log_warn(
-          "\tavoid long waits wating for triggerd images by providing proper "
+          "\tavoid long waits wating for triggered images by providing proper "
           "exposure_time.");
     }
     // Enable trigger mode before setting the source and selector

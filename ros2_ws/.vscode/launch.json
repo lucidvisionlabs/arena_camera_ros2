@@ -45,6 +45,12 @@
                 //"exposure_time:=50.0",
                 //"-p",
                 //"trigger_mode:=true",
+                "-p",
+                "qos_history:=keep_all",
+                "-p",
+                "qos_history_depth:=8",
+                "-p",
+                "qos_reliability:=best_effort"
             ],
             "cwd": "${workspaceFolder:WS_ROOT}",
             "stopAtEntry": false,
