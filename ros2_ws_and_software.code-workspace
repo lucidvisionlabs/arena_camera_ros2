@@ -70,16 +70,19 @@
     "C_Cpp.clang_format_fallbackStyle": "none",
     "C_Cpp.clang_format_sortIncludes": true,
     "C_Cpp.workspaceSymbols": "All",
-    "C_Cpp.loggingLevel": "Debug",
-    "C_Cpp.intelliSenseEngineFallback": "Enabled",
-    "C_Cpp.intelliSenseCacheSize": 900000,
-    "C_Cpp.default.browse.path": [
-      "${workspaceFolder}/**",
-      "/opt/ros/eloquent/include/**",
-      "/home/abdul/ArenaSDK_Linux_x64/Arena/**",
-      //"/mnt/c/softwarelib/**"
+    "C_Cpp.loggingLevel": "Information",
+    "C_Cpp.intelliSenseCacheSize": 2000, // Megabytes
+    "C_Cpp.intelliSenseEngine": "Default",
+    "C_Cpp.intelliSenseEngineFallback": "Disabled",
+    "C_Cpp.default.includePath": [
+      "/opt/ros/eloquent/include/", // ros installation dir
+      "${env:ARENA_ROOT}/**" // ArenaSDK installation dir. you can replace the env variable with a path
     ],
+    "C_Cpp.default.browse.path": [],
+    "C_Cpp.default.enableConfigurationSquiggles": true,
+    "C_Cpp.dimInactiveRegions": true,
     "C_Cpp.autocomplete": "Default",
+    "C_Cpp.default.configurationProvider": "${default}",
     //
     // Colcon
     //
@@ -92,6 +95,7 @@
     "cmake.saveBeforeBuild": true,
     "cmake.parseBuildDiagnostics": true,
     // ${workspaceFolder} interpreted PKG_ROOT because it is selected form the status bar
+    // ${workspaceFolder:<NAME>} is not supported yet
     "cmake.sourceDirectory": "${workspaceFolder}/CMakeLists.txt",
     "cmake.installPrefix": "${workspaceFolder}/../../install",
     "cmake.buildDirectory": "${workspaceFolder}/../../build",
@@ -100,16 +104,50 @@
     //
     "debug.onTaskErrors": "abort",
     "cSpell.words": [
+      "ARENASDK",
       "BGGR",
       "CMDLN",
+      "Colcon",
       "GPIO",
       "GRBG",
       "Pfnc",
       "RGGB",
+      "cctype",
+      "cfenv",
+      "chrono",
+      "cinttypes",
+      "clocale",
+      "cmath",
+      "codecvt",
+      "csignal",
+      "cstdarg",
+      "cstddef",
+      "cstdint",
+      "cstdio",
+      "cstdlib",
+      "cstring",
+      "cwchar",
+      "cwctype",
+      "deque",
+      "distro",
+      "fstream",
       "gcstring",
+      "iomanip",
+      "iosfwd",
+      "iostream",
+      "istream",
+      "mutex",
+      "ostream",
       "rclcpp",
       "rclpy",
-      "srvs"
+      "softwarelib",
+      "srvs",
+      "sstream",
+      "stdexcept",
+      "streambuf",
+      "strstream",
+      "typeindex",
+      "typeinfo"
     ],
     "files.associations": {
       "cctype": "cpp",

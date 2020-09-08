@@ -2,18 +2,14 @@
     "configurations": [
         {
             "name": "Linux",
-            "includePath": [
-                //"${workspaceFolder}/**",
-                //"/opt/ros/eloquent/include/**",
-                //"/home/abdul/ArenaSDK_Linux_x64/**",
-                //"/mnt/c/softwarelib/**"
-            ],
-            "defines": [],
+            "includePath": [], // reads from the seetingsin workspace file
+            "defines": [], // reads from the seetingsin workspace file
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "c11",
             "cppStandard": "c++14",
-            "intelliSenseMode": "${default}",
-        },
+            "intelliSenseMode": "${default}"
+        }
+        /*,
         {
             "name": "Win32",
             "includePath": [
@@ -32,7 +28,7 @@
             "cStandard": "c11",
             "cppStandard": "c++14",
             "intelliSenseMode": "msvc-x64"
-        }
+        }*/
     ],
     "version": 4
 }
