@@ -103,7 +103,7 @@ void ArenaCameraNode::initialize_()
   // TRIGGER (service) ------------------------------------------------------
   //
   using namespace std::placeholders;
-  m_srv_ = this->create_service<std_srvs::srv::Trigger>(
+  m_trigger_an_image_srv_ = this->create_service<std_srvs::srv::Trigger>(
       std::string(this->get_name()) + "/trigger_image",
       std::bind(&ArenaCameraNode::publish_an_image_on_trigger_, this, _1, _2));
 
@@ -312,13 +312,13 @@ void ArenaCameraNode::msg_form_image_(Arena::IImage* pImage,
 }
 
 void ArenaCameraNode::publish_an_image_on_trigger_(
-    const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
+    std::shared_ptr<std_srvs::srv::Trigger::Request> request /*unused*/,
     std::shared_ptr<std_srvs::srv::Trigger::Response> response)
 {
-  /*
   if (!trigger_mode_activated_) {
     std::string msg =
-        "Failed to trigger image because the device is not in trigger mode";
+        "Failed to trigger image because the device is not in trigger mode."
+        "run `ros2 run arena_camera_node run --ros-args -p trigger_mode:=true`";
     log_warn(msg);
     response->message = msg;
     response->success = false;
@@ -326,7 +326,7 @@ void ArenaCameraNode::publish_an_image_on_trigger_(
 
   log_info("A client triggered an image request");
 
-  Arena::IImage* image = nullptr;
+  Arena::IImage* pImage = nullptr;
   try {
     // trigger
     bool triggerArmed = false;
@@ -346,38 +346,39 @@ void ArenaCameraNode::publish_an_image_on_trigger_(
     Arena::ExecuteNode(m_pDevice->GetNodeMap(), "TriggerSoftware");
 
     // get image
-    log_debug("getting an image");
-    image = m_pDevice->GetImage(1000);
+    auto p_image_msg = std::make_unique<sensor_msgs::msg::Image>();
 
-    auto msg = std::string("image ") + std::to_string(image->GetFrameId()) +
+    log_debug("getting an image");
+    pImage = m_pDevice->GetImage(1000);
+    auto msg = std::string("image ") + std::to_string(pImage->GetFrameId()) +
                " published to " + topic_;
-    auto image_msg = msg_form_image_(image);
-    m_pub_->publish(image_msg);
+    msg_form_image_(pImage, *p_image_msg);
+    m_pub_->publish(std::move(p_image_msg));
     response->message = msg;
     response->success = true;
 
     log_info(msg);
-    this->m_pDevice->RequeueBuffer(image);
+    this->m_pDevice->RequeueBuffer(pImage);
 
   }
 
   catch (std::exception& e) {
-    if (image) {
-      this->m_pDevice->RequeueBuffer(image);
-      image = nullptr;
+    if (pImage) {
+      this->m_pDevice->RequeueBuffer(pImage);
+      pImage = nullptr;
     }
     auto msg =
         std::string("Exception occurred while grabbing an image\n") + e.what();
     log_warn(msg);
     response->message = msg;
     response->success = false;
-    // return;
+
   }
 
   catch (GenICam::GenericException& e) {
-    if (image) {
-      this->m_pDevice->RequeueBuffer(image);
-      image = nullptr;
+    if (pImage) {
+      this->m_pDevice->RequeueBuffer(pImage);
+      pImage = nullptr;
     }
     auto msg =
         std::string("GenICam Exception occurred while grabbing an image\n") +
@@ -385,8 +386,7 @@ void ArenaCameraNode::publish_an_image_on_trigger_(
     log_warn(msg);
     response->message = msg;
     response->success = false;
-    // return;
-  }*/
+  }
 }
 
 Arena::IDevice* ArenaCameraNode::create_device_ros_()

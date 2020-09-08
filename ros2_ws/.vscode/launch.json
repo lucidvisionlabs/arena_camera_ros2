@@ -43,14 +43,16 @@
                 //"pixelformat:=mono16",
                 //"-p",
                 //"exposure_time:=50.0",
+                "-p",
+                "trigger_mode:=true",
                 //"-p",
-                //"trigger_mode:=true",
+                //"qos_history:=keep_all",
+                //"qos_history:=keep_last",
+                //"-p",
+                //"qos_history_depth:=10",
                 "-p",
-                "qos_history:=keep_all",
-                "-p",
-                "qos_history_depth:=8",
-                "-p",
-                "qos_reliability:=best_effort"
+                "qos_reliability:=reliable"
+                //"qos_reliability:=best_effort"
             ],
             "cwd": "${workspaceFolder:WS_ROOT}",
             "stopAtEntry": false,
@@ -153,7 +155,7 @@
             "program": "${workspaceFolder:WS_ROOT}/install/arena_camera_node/lib/arena_camera_node/trigger_image",
             "cwd": "${workspaceFolder:WS_ROOT}",
             "stopAtEntry": false,
-            "preLaunchTask": "colcon_build_install_debug",
+            //"preLaunchTask": "colcon_build_install_debug",
             //"preLaunchTask": "launch_start_in_trigger_mode",
             "sourceFileMap": {
                 "/home/ubuntu/Jenkins/workspace/ArenaSDK_Master_Lin/": "${workspaceFolder:SFW}/"

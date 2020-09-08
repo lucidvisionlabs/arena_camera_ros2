@@ -29,19 +29,15 @@ class ArenaCameraNode : public rclcpp::Node
     setvbuf(stdout, NULL, _IONBF, BUFSIZ);
 
     log_info(std::string("Creating \"") + this->get_name() + "\" node");
-
     parse_parameters_();
     initialize_();
-
     log_info(std::string("Created \"") + this->get_name() + "\" node");
   }
+
   ~ArenaCameraNode()
   {
     log_info(std::string("Destroying \"") + this->get_name() + "\" node");
   }
-
-  std::shared_ptr<Arena::ISystem> m_pSystem;
-  std::shared_ptr<Arena::IDevice> m_pDevice;
 
   void log_debug(std::string msg) { RCLCPP_DEBUG(this->get_logger(), msg); };
   void log_info(std::string msg) { RCLCPP_INFO(this->get_logger(), msg); };
@@ -49,9 +45,12 @@ class ArenaCameraNode : public rclcpp::Node
   void log_err(std::string msg) { RCLCPP_ERROR(this->get_logger(), msg); };
 
  private:
+  std::shared_ptr<Arena::ISystem> m_pSystem;
+  std::shared_ptr<Arena::IDevice> m_pDevice;
+
   rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr m_pub_;
   rclcpp::TimerBase::SharedPtr m_wait_for_device_timer_callback_;
-  rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr m_srv_;
+  rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr m_trigger_an_image_srv_;
 
   std::string serial_;
   bool is_passed_serial_;
@@ -105,7 +104,7 @@ class ArenaCameraNode : public rclcpp::Node
   void publish_images_();
 
   void publish_an_image_on_trigger_(
-      const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
+      std::shared_ptr<std_srvs::srv::Trigger::Request> request,
       std::shared_ptr<std_srvs::srv::Trigger::Response> response);
   void msg_form_image_(Arena::IImage* pImage,
                        sensor_msgs::msg::Image& image_msg);
