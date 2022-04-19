@@ -6,7 +6,7 @@ Arena Camera deriver for ROS2
   
 # Requirements
 - 1 
-  - OS       : Linux (x64/amd64) (==18.04) 
+  - OS       : Linux (x64/amd64/arm64) (==18.04) 
   - ROS2     : Eloquent distro (installation steps in ros2_arena_setup.sh)
   - ArenaSDK : Contact support@thinklucid.com
   - arena_api : Contact support@thinklucid.com
@@ -26,12 +26,14 @@ Arena Camera deriver for ROS2
 - install ROS2 and setup the environment 
     
     `cat arena_camera_ros2\ros2_arena_setup.sh` to view the script
+    
+    uncomment `echo "source /opt/ros/eloquent/setup.bash" >> ~/.bashrc` if using a regular terminal
 
     `cd arena_camera_ros2 ; sudo sh ros2_arena_setup.sh` installs ROS2 Eloquent distro
 
 - build workspace and its dependencies
 
-    `source ~/.bashrc`
+    `source ~/.bashrc`if using a regular terminal
 
     `cd arena_camera_ros2\ros2_ws`
 
@@ -148,7 +150,7 @@ Arena Camera deriver for ROS2
 - add -h flag to nodes
 - showimage node to view 2D and 3D images
 - launch file
-- support fully ARM64 and ARMhf
+- support ARMhf
 - camera_info
 - access to nodemaps
 - settings dump/read to/from file
