@@ -2,7 +2,7 @@
 Arena Camera deriver for ROS2
 
 # Note
-- This ROS2 package is still in beta. Please provide your feedback is welcomed at support@thinklucid.com or the repo issue page
+- Please provide your feedback is welcomed at support@thinklucid.com or the repo issue page
   
 # Requirements
 - 1 
@@ -16,9 +16,12 @@ Arena Camera deriver for ROS2
   - build the docker image provided
   
 # Getting Started
-- clone repo
+- clone repo or download release
     
     `git clone https://github.com/lucidvisionlabs/arena_camera_ros2.git`
+
+- install ArenaSDK and arena_api
+  - contact support@thinklucid.com
 
 - install ROS2 and setup the environment 
     
@@ -26,16 +29,19 @@ Arena Camera deriver for ROS2
 
     `cd arena_camera_ros2 ; sudo sh ros2_arena_setup.sh` installs ROS2 Eloquent distro
 
-- install ArenaSDK and arena_api
-  - contact support@thinklucid.com
-
 - build workspace and its dependencies
+
+    `source ~/.bashrc`
 
     `cd arena_camera_ros2\ros2_ws`
 
     `rosdep install --from-paths src --ignore-src -r -y`
 
     `colcon build --symlink-install # build workspace for dev`
+
+- install the build
+
+    `. install/setup.bash`
 
 # Explore
 - explore nodes
@@ -142,7 +148,7 @@ Arena Camera deriver for ROS2
 - add -h flag to nodes
 - showimage node to view 2D and 3D images
 - launch file
-- support ARM64 and ARMhf
+- support fully ARM64 and ARMhf
 - camera_info
 - access to nodemaps
 - settings dump/read to/from file
