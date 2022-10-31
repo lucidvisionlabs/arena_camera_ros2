@@ -418,7 +418,7 @@ void ArenaCameraNode::set_nodes_()
   set_nodes_pixelformat_();
   set_nodes_exposure_();
   set_nodes_trigger_mode_();
-  set_nodes_test_pattern_image_();
+  //set_nodes_test_pattern_image_();
 }
 
 void ArenaCameraNode::set_nodes_load_default_profile_()
