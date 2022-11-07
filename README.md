@@ -26,8 +26,6 @@ Arena Camera deriver for ROS2
 - install ROS2 and setup the environment 
     
     `cat arena_camera_ros2/ros2_arena_setup.sh` to view the script
-    
-    uncomment `echo "source /opt/ros/eloquent/setup.bash" >> ~/.bashrc` if using a regular terminal
 
     `cd arena_camera_ros2 ; sudo sh ros2_arena_setup.sh` installs ROS2 Eloquent distro
 
@@ -150,7 +148,6 @@ Arena Camera deriver for ROS2
 - add -h flag to nodes
 - showimage node to view 2D and 3D images
 - launch file
-- support ARMhf
 - camera_info
 - access to nodemaps
 - settings dump/read to/from file
