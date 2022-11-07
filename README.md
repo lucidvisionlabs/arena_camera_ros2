@@ -8,11 +8,9 @@ Arena Camera deriver for ROS2
 - 1 
   - OS       : Linux (x64/amd64/arm64) (==18.04) 
   - ROS2     : Eloquent distro (installation steps in ros2_arena_setup.sh)
-  - ArenaSDK : Contact support@thinklucid.com
-  - arena_api : Contact support@thinklucid.com
+  - ArenaSDK and arena_api : https://thinklucid.com/downloads-hub/
 - or 2 Docker
-  - ArenaSDK : Contact support@thinklucid.com
-  - arena_api : Contact support@thinklucid.com
+  - ArenaSDK and arena_api : https://thinklucid.com/downloads-hub/
   - build the docker image provided
   
 # Getting Started
@@ -21,7 +19,7 @@ Arena Camera deriver for ROS2
     `git clone https://github.com/lucidvisionlabs/arena_camera_ros2.git`
 
 - install ArenaSDK and arena_api
-  - contact support@thinklucid.com
+  - https://thinklucid.com/downloads-hub/
 
 - install ROS2 and setup the environment 
     
