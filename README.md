@@ -25,7 +25,7 @@ Arena Camera deriver for ROS2
 
 - install ROS2 and setup the environment 
     
-    `cat arena_camera_ros2\ros2_arena_setup.sh` to view the script
+    `cat arena_camera_ros2/ros2_arena_setup.sh` to view the script
     
     uncomment `echo "source /opt/ros/eloquent/setup.bash" >> ~/.bashrc` if using a regular terminal
 
@@ -35,7 +35,7 @@ Arena Camera deriver for ROS2
 
     `source ~/.bashrc`if using a regular terminal
 
-    `cd arena_camera_ros2\ros2_ws`
+    `cd arena_camera_ros2/ros2_ws`
 
     `rosdep install --from-paths src --ignore-src -r -y`
 
