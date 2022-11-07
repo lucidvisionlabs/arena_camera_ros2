@@ -46,7 +46,8 @@ if [ $INSTALL_ROS2 -eq 1 ]; then
     sudo apt-get install 'ros-eloquent-launch*' --assume-yes
 
     # env setup --------------------------------------------
-    #   - echo "source /opt/ros/eloquent/setup.bash" >> ~/.bashrc
+    echo "source /opt/ros/eloquent/setup.bash" >> ~/.bashrc
+    Uncomment if use zshell
     #   - echo "source /opt/ros/eloquent/setup.zsh>" >> ~/.zshrc
 
     # install argcomplete (optional)
