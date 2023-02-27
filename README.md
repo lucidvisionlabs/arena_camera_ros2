@@ -6,8 +6,8 @@ Arena Camera deriver for ROS2
   
 # Requirements
 - 1 
-  - OS       : Linux (x64/amd64/arm64) (==18.04) 
-  - ROS2     : Eloquent distro (installation steps in ros2_arena_setup.sh)
+  - OS       : Linux (x64/amd64/arm64) (==22.04) 
+  - ROS2     : Humble Hawksbill distro (installation steps in ros2_arena_setup.sh)
   - ArenaSDK and arena_api : https://thinklucid.com/downloads-hub/
 - or 2 Docker
   - ArenaSDK and arena_api : https://thinklucid.com/downloads-hub/
@@ -25,15 +25,17 @@ Arena Camera deriver for ROS2
     
     `cat arena_camera_ros2/ros2_arena_setup.sh` to view the script
 
-    `cd arena_camera_ros2 ; sudo sh ros2_arena_setup.sh` installs ROS2 Eloquent distro
+    `cd arena_camera_ros2 ; sudo sh ros2_arena_setup.sh` installs ROS2 Humble Hawksbill distro
 
 - build workspace and its dependencies
 
-    `source ~/.bashrc`if using a regular terminal
+    `source /opt/ros/humble/setup.bash` if using a regular terminal
 
     `cd arena_camera_ros2/ros2_ws`
+    
+    `rosdep update`
 
-    `rosdep install --from-paths src --ignore-src -r -y`
+    `rosdep install --from-paths src --ignore-src --rosdistro humble -r -y`
 
     `colcon build --symlink-install # build workspace for dev`
 
