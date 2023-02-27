@@ -39,10 +39,10 @@ class ArenaCameraNode : public rclcpp::Node
     log_info(std::string("Destroying \"") + this->get_name() + "\" node");
   }
 
-  void log_debug(std::string msg) { RCLCPP_DEBUG(this->get_logger(), msg); };
-  void log_info(std::string msg) { RCLCPP_INFO(this->get_logger(), msg); };
-  void log_warn(std::string msg) { RCLCPP_WARN(this->get_logger(), msg); };
-  void log_err(std::string msg) { RCLCPP_ERROR(this->get_logger(), msg); };
+  void log_debug(std::string msg) { RCLCPP_DEBUG(this->get_logger(), msg.c_str()); };
+  void log_info(std::string msg) { RCLCPP_INFO(this->get_logger(), msg.c_str()); };
+  void log_warn(std::string msg) { RCLCPP_WARN(this->get_logger(), msg.c_str()); };
+  void log_err(std::string msg) { RCLCPP_ERROR(this->get_logger(), msg.c_str()); };
 
  private:
   std::shared_ptr<Arena::ISystem> m_pSystem;
