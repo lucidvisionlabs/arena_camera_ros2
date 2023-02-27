@@ -26,8 +26,8 @@
       "path": "../arena_camera_ros"
     },
     {
-      "name": "ELOQUENT SRC CODE",
-      "path": "/opt/ros/eloquent"
+      "name": "HUMBLE SRC CODE",
+      "path": "/opt/ros/humble"
     }*/
   ],
   "extensions": {
@@ -75,7 +75,7 @@
     "C_Cpp.intelliSenseEngine": "Default",
     "C_Cpp.intelliSenseEngineFallback": "Disabled",
     "C_Cpp.default.includePath": [
-      "/opt/ros/eloquent/include/", // ros installation dir
+      "/opt/ros/humble/include/", // ros installation dir
       "${env:ARENA_ROOT}/**" // ArenaSDK installation dir. you can replace the env variable with a path
     ],
     "C_Cpp.default.browse.path": [],
@@ -268,6 +268,6 @@
       "xaver",
       "xaver clang format"
     ],
-    "ros.distro": "eloquent"
+    "ros.distro": "humble"
   },
 }
