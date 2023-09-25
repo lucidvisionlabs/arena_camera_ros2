@@ -418,6 +418,9 @@ void ArenaCameraNode::set_nodes_()
   set_nodes_pixelformat_();
   set_nodes_exposure_();
   set_nodes_trigger_mode_();
+  // configure Auto Negotiate Packet Size and Packet Resend
+  Arena::SetNodeValue<GenICam::gcstring>(nodemap, "StreamAutoNegotiatePacketSize", True);
+  Arena::SetNodeValue<GenICam::gcstring>(nodemap, "StreamPacketResendEnable", True);
   //set_nodes_test_pattern_image_();
 }
 
