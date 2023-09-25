@@ -3,8 +3,7 @@ Arena Camera deriver for ROS2
 
 # Note
 - Please provide your feedback is welcomed at support@thinklucid.com or the repo issue page
-   
-   
+      
 # Requirements
 - 1 
   - OS       : Linux (x64/amd64/arm64) (==22.04) 
