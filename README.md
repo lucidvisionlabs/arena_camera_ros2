@@ -1,3 +1,7 @@
+# Report an issue
+Please reach out to the support team https://support.thinklucid.com/contact-support/ 
+Or email to support@thinklucid.com
+
 # arena_camera_ros2
 Arena Camera deriver for ROS2
 
