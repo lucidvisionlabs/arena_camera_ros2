@@ -426,8 +426,8 @@ void ArenaCameraNode::set_nodes_()
   set_nodes_exposure_();
   set_nodes_trigger_mode_();
   // configure Auto Negotiate Packet Size and Packet Resend
-  Arena::SetNodeValue<bool>(m_pDevice->GetTLStreamNodeMap(), "StreamAutoNegotiatePacketSize", True);
-  Arena::SetNodeValue<bool>(m_pDevice->GetTLStreamNodeMap(), "StreamPacketResendEnable", True);
+  Arena::SetNodeValue<bool>(m_pDevice->GetTLStreamNodeMap(), "StreamAutoNegotiatePacketSize", true);
+  Arena::SetNodeValue<bool>(m_pDevice->GetTLStreamNodeMap(), "StreamPacketResendEnable", true);
 
   //set_nodes_test_pattern_image_();
 }
